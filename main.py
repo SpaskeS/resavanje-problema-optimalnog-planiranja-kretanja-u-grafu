@@ -1,201 +1,206 @@
 from tkinter import *
 import tkinter.messagebox
 
-# TODO: Srediti elemente po klasama
-# TODO: Izbaciti globalne promenljive ako je moguce
-# TODO: staviti da ne mogu da se biraju dva pocetka i dva kraja
 
+class Prozor:
+    def __init__(self):
+        print('idemo delije')
+        self.root = Tk()
+        self.root.attributes("-fullscreen", True)
 
-canvas_mode = None
-grana_pocetak = 0
-x_grana= None
-y_grana= None
-prvi_cvor = None
-grane = {}
-cvorovi = {}
+        self.napravi_elemente()
+        self.konfigurisi_elemente()
 
-def start_alg_1():
-    if tkinter.messagebox.askquestion('Algoritam 1', 'Pokreni algoritam 1?') == 'yes':
-        print('Pokrecem algoritam 1')
+        self.canvas_mode = None
+        self.grana_pocetak = 0
+        self.x_grana= None
+        self.y_grana= None
+        self.prvi_cvor = None
+        self.grane = {}
+        self.cvorovi = {}
+        self.pocetak = None
+        self.postoji_pocetak = False
+        self.kraj = None
+        self.postoji_kraj=False
 
-def start_alg_2():
-    if tkinter.messagebox.askquestion('Algoritam 2', 'Pokreni algoritam 2?') == 'yes':
-        print('Pokrecem algoritam 2')
+    def napravi_elemente(self):
+        self.button_alg_1 = Button(self.root, text='Algoritam 1', command=self.start_alg_1, width=30)
+        self.button_alg_2 = Button(self.root, text='Algoritam 2', command=self.start_alg_2, width=30)
+        self.button_alg_3 = Button(self.root, text='Algoritam 2', command=self.start_alg_3, width=30)
+        self.button_pocetak = Button(self.root, text='Početak', command=self.pocetak, width=30)
+        self.button_kraj = Button(self.root, text='Kraj', command=self.kraj, width=30)
+        self.button_dodaj_cvor = Button(self.root, text='Dodaj čvor', command=self.dodaj_cvor, width=30)
+        self.button_dodaj_granu = Button(self.root, text='Dodaj granu', command=self.dodaj_granu, width=30)
+        self.button_izbrisi_cvor = Button(self.root, text='Izbriši čvor', command=self.izbrisi_cvor, width=30)
+        self.button_izbrisi_granu = Button(self.root, text='Izbriši granu', command=self.izbrisi_granu, width=30)
+        self.button_reset = Button(self.root, text='Reset', command=self.reset, width=30)
+        self.button_exit = Button(self.root, text='Exit', command= self.quit, width=30)
+        self.button_dodaj_prepreku = Button(self.root, text='Dodaj prepreku', command = self.dodaj_prepreku, width=30)
+        self.canvas = Canvas(self.root, width = 800, height = 700, bg='white')
 
-def start_alg_3():
-    if tkinter.messagebox.askquestion('Algoritam 3', 'Pokreni algoritam 3?') == 'yes':
-        print('Pokrecem algoritam 3')
+        # TODO: Staviti da elementi budu responsive u odnosu na velicinu prozora
 
-def pocetak():
-    print('Odredi pocetni cvor')
-    global canvas_mode
-    canvas_mode = 'pocetak'
+    def konfigurisi_elemente(self):
+        self.button_alg_1.grid(column=0, row = 0)
+        self.button_alg_2.grid(column=1, row = 0)
+        self.button_alg_3.grid(column=2, row = 0)
+        self.button_pocetak.grid(column=3, row=1)
+        self.button_kraj.grid(column=4, row=1)
+        self.button_dodaj_cvor.grid(column = 3, row = 2)
+        self.button_dodaj_granu.grid(column=4, row = 2)
+        self.button_izbrisi_cvor.grid(column=3, row=3)
+        self.button_izbrisi_granu.grid(column=4, row=3)
+        self.button_exit.grid(column=4, row=0)
+        self.button_reset.grid(column = 4, row=4)
+        self.button_dodaj_prepreku.grid(column = 3, row=4)
+        self.canvas.grid(row=1, column=0, columnspan=3, rowspan=4)
 
-def kraj():
-    print('Odredi krajnji cvor')
-    global canvas_mode
-    canvas_mode='kraj'
+        self.root.grid_columnconfigure(0,weight=1)
+        self.root.grid_columnconfigure(1,weight=1)
+        self.root.grid_columnconfigure(2,weight=1)
+        self.root.grid_columnconfigure(3,weight=1)
+        self.root.grid_columnconfigure(4,weight=1)
+        self.root.grid_rowconfigure(0,weight=1)
+        self.root.grid_rowconfigure(1,weight=1)
+        self.root.grid_rowconfigure(2,weight=1)
+        self.root.grid_rowconfigure(3,weight=1)
+        self.root.grid_rowconfigure(4,weight=1)
+        self.canvas.bind('<Button-1>', self.canvas_klik)
 
-def dodaj_cvor():
-    global canvas_mode
-    canvas_mode = 'dodaj_cvor'
-    print('canvas_mode')
+    def start_alg_1(self):
+        if tkinter.messagebox.askquestion('Algoritam 1', 'Pokreni algoritam 1?') == 'yes':
+            print('Pokrecem algoritam 1')
 
-def dodaj_granu():
-    global canvas_mode
-    canvas_mode = 'dodaj_granu'
+    def start_alg_2(self):
+        if tkinter.messagebox.askquestion('Algoritam 2', 'Pokreni algoritam 2?') == 'yes':
+            print('Pokrecem algoritam 2')
 
-def izbrisi_cvor():
-    global canvas_mode
-    canvas_mode = 'izbrisi_cvor'
+    def start_alg_3(self):
+        if tkinter.messagebox.askquestion('Algoritam 3', 'Pokreni algoritam 3?') == 'yes':
+            print('Pokrecem algoritam 3')
 
-def izbrisi_granu():
-    global canvas_mode
-    canvas_mode = 'izbrisi_granu'
+    def pocetak(self):
+        self.canvas_mode = 'pocetak'
 
-def dodaj_prepreku():
-    global canvas_mode
-    canvas_mode = 'dodaj_prepreku'
+    def kraj(self):
+        self.canvas_mode='kraj'
 
+    def dodaj_cvor(self):
+        self.canvas_mode = 'dodaj_cvor'
 
-def reset():
-    if tkinter.messagebox.askquestion('Reset', 'Da li hocete da restartuje graf?') == 'yes':
-        print('Restartujem graf')
-        global canvas, grane, cvorovi, canvas_mode
-        canvas.delete(ALL)
-        grane = {}
-        cvorovi= {}
-        canvas_mode = None
+    def dodaj_granu(self):
+        self.canvas_mode = 'dodaj_granu'
 
+    def izbrisi_cvor(self):
+        self.canvas_mode = 'izbrisi_cvor'
 
-def grana_klik(event):
-    if canvas_mode == 'izbrisi_granu':
-        global grane
-        canvas.delete(event)
-        grane.pop(event)
+    def izbrisi_granu(self):
+        self.canvas_mode = 'izbrisi_granu'
 
-def canvas_klik(event):
-    print(event.x)
-    print(event.y)
-    print('------------------')
-    x = event.x
-    y = event.y
+    def dodaj_prepreku(self):
+        self.canvas_mode = 'dodaj_prepreku'
 
-    global cvorovi, grane
+    def reset(self):
+        if tkinter.messagebox.askquestion('Reset', 'Da li hocete da restartuje graf?') == 'yes':
+            print('Restartujem graf')
+            self.canvas.delete(ALL)
+            self.grane = {}
+            self.cvorovi= {}
+            self.canvas_mode = None
 
-    if canvas_mode == 'dodaj_cvor':
-        global cvorovi
-        for (id, koordinate) in cvorovi.items():
-            if abs(x-koordinate[0]) < 50 and abs(y-koordinate[1]) < 50:
-                print('Drugi cvor je previse blizu')
-                return
-        cvor = canvas.create_oval(x-15, y-15, x+15, y+15, outline='red', fill='gray')
-        cvorovi[cvor] = (x, y)
+    def grana_klik(self, event):
+        if self.canvas_mode == 'izbrisi_granu':
+            self.canvas.delete(event)
+            self.grane.pop(event)
 
-    if canvas_mode == 'dodaj_granu':
-        for (id, koordinate) in cvorovi.items():
-            if abs(koordinate[0]-x) <= 15 and abs(koordinate[1]-y) <= 15:
-                global grana_pocetak
-                if grana_pocetak==0:
-                    global x_grana, y_grana, prvi_cvor
-                    x_grana = x
-                    y_grana = y
-                    prvi_cvor = id
-                    grana_pocetak=1
-                else:
-                    if id == prvi_cvor:
-                        print('Cvor ne moze imati povratnih grana')
-                        return
-                    grana_pocetak=0
-                    grana = canvas.create_line(cvorovi[prvi_cvor][0], cvorovi[prvi_cvor][1], koordinate[0], koordinate[1], width=4, fill='blue')
-                    grane[grana] = (prvi_cvor, id)
-                    canvas.tag_lower(grana)
-                    print(grana)
-                    canvas.tag_bind(grana, '<Button-1>', lambda g: grana_klik(grana))
-                    prvi_cvor = None
+    def canvas_klik(self,event):
+        print(event.x)
+        print(event.y)
+        print('------------------')
+        x = event.x
+        y = event.y
 
-    if canvas_mode == 'izbrisi_cvor':
+        if self.canvas_mode == 'dodaj_cvor':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(x-koordinate[0]) < 50 and abs(y-koordinate[1]) < 50:
+                    print('Drugi cvor je previse blizu')
+                    return
+            cvor = self.canvas.create_oval(x-15, y-15, x+15, y+15, outline='red', fill='gray')
+            self.cvorovi[cvor] = (x, y)
 
-        for (id, koordinate) in cvorovi.items():
-            if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
-                canvas.delete(id)
-                cvorovi.pop(id)
-                grane_za_brisanje = []
-                for(gid, cvorovi_grane) in grane.items():
-                    if id == cvorovi_grane[0] or id == cvorovi_grane[1]:
-                        canvas.delete(gid)
-                        grane_za_brisanje.append(gid)
-                for gid in grane_za_brisanje:
-                    grane.pop(gid)
-                return
+        if self.canvas_mode == 'dodaj_granu':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(koordinate[0]-x) <= 15 and abs(koordinate[1]-y) <= 15:
+                    if self.grana_pocetak==0:
+                        self.x_grana = x
+                        self.y_grana = y
+                        self.prvi_cvor = id
+                        self.grana_pocetak=1
+                    else:
+                        if id == self.prvi_cvor:
+                            print('Cvor ne moze imati povratnih grana')
+                            return
+                        self.grana_pocetak=0
+                        grana = self.canvas.create_line(self.cvorovi[self.prvi_cvor][0], self.cvorovi[self.prvi_cvor][1], koordinate[0], koordinate[1], width=4, fill='blue')
+                        self.grane[grana] = (self.prvi_cvor, id)
+                        self.canvas.tag_lower(grana)
+                        self.canvas.tag_bind(grana, '<Button-1>', lambda g: self.grana_klik(grana))
+                        self.prvi_cvor = None
 
-    if canvas_mode == 'pocetak':
-        for (id, koordinate) in cvorovi.items():
-            if abs(x-koordinate[0]) < 15 and abs(y-koordinate[1]) < 15:
-                canvas.itemconfig(id, fill='green')
+        if self.canvas_mode == 'izbrisi_cvor':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
+                    self.canvas.delete(id)
+                    self.cvorovi.pop(id)
+                    grane_za_brisanje = []
+                    for(gid, cvorovi_grane) in self.grane.items():
+                        if id == cvorovi_grane[0] or id == cvorovi_grane[1]:
+                            print(cvorovi_grane)
+                            self.canvas.delete(gid)
+                            grane_za_brisanje.append(gid)
+                    for gid in grane_za_brisanje:
+                        self.grane.pop(gid)
+                    return
 
-    if canvas_mode == 'kraj':
-        for (id, koordinate) in cvorovi.items():
-            if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
-                canvas.itemconfig(id, fill='red')
+        if self.canvas_mode == 'pocetak':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(x-koordinate[0]) < 15 and abs(y-koordinate[1]) < 15:
+                    if self.postoji_pocetak == False:
+                        self.canvas.itemconfig(id, fill='green')
+                        self.pocetak=id
+                        self.postoji_pocetak=True
+                    else:
+                        if tkinter.messagebox.askquestion('Promeni start', 'Da li hocete da promenite pocetni cvor?') == 'yes':
+                            self.canvas.itemconfig(self.pocetak, fill='gray')
+                            self.canvas.itemconfig(id, fill='green')
+                            self.pocetak=id
 
-    if canvas_mode == 'dodaj_prepreku':
-        for (id, koordinate) in cvorovi.items():
-            if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
-                canvas.itemconfig(id, fill='black')
+        if self.canvas_mode == 'kraj':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
+                        if self.postoji_kraj == False:
+                            self.canvas.itemconfig(id, fill='red')
+                            self.kraj=id
+                            self.postoji_kraj=True
+                        else:
+                            if tkinter.messagebox.askquestion('Promeni kraj', 'Da li hocete da promenite ciljni cvor?') == 'yes':
+                                    self.canvas.itemconfig(self.kraj, fill='gray')
+                                    self.canvas.itemconfig(id, fill='red')
+                                    self.kraj=id
 
-def quit():
-    exit(1)
+        if self.canvas_mode == 'dodaj_prepreku':
+            for (id, koordinate) in self.cvorovi.items():
+                if abs(koordinate[0]-x) < 15 and abs(koordinate[1]-y) < 15:
+                    self.canvas.itemconfig(id, fill='black')
+
+    def quit(self):
+        exit(1)
 
 def main():
-    root = Tk()
-    root.attributes("-fullscreen", True)
 
-    button_alg_1 = Button(root, text='Algoritam 1', command=start_alg_1, width=30)
-    button_alg_2 = Button(root, text='Algoritam 2', command=start_alg_2, width=30)
-    button_alg_3 = Button(root, text='Algoritam 2', command=start_alg_3, width=30)
-    button_pocetak = Button(root, text='Početak', command=pocetak, width=30)
-    button_kraj = Button(root, text='Kraj', command=kraj, width=30)
-    button_dodaj_cvor = Button(root, text='Dodaj čvor', command=dodaj_cvor, width=30)
-    button_dodaj_granu = Button(root, text='Dodaj granu', command=dodaj_granu, width=30)
-    button_izbrisi_cvor = Button(root, text='Izbriši čvor', command=izbrisi_cvor, width=30)
-    button_izbrisi_granu = Button(root, text='Izbriši granu', command=izbrisi_granu, width=30)
-    button_reset = Button(root, text='Reset', command=reset, width=30)
-    button_exit = Button(root, text='Exit', command= quit, width=30)
-    button_dodaj_prepreku = Button(root, text='Dodaj prepreku', command = dodaj_prepreku, width=30)
-    global canvas
-    canvas = Canvas(root, width = 800, height = 700, bg='white')
+    prozor = Prozor()
 
-    # TODO: Namestiti da dugmici budu responsive prema menjanu velicine prozora
-
-    button_alg_1.grid(column=0, row = 0)
-    button_alg_2.grid(column=1, row = 0)
-    button_alg_3.grid(column=2, row = 0)
-    button_pocetak.grid(column=3, row=1)
-    button_kraj.grid(column=4, row=1)
-    button_dodaj_cvor.grid(column = 3, row = 2)
-    button_dodaj_granu.grid(column=4, row = 2)
-    button_izbrisi_cvor.grid(column=3, row=3)
-    button_izbrisi_granu.grid(column=4, row=3)
-    button_exit.grid(column=4, row=0)
-    button_reset.grid(column = 4, row=4)
-    button_dodaj_prepreku.grid(column = 3, row=4)
-    canvas.grid(row=1, column=0, columnspan=3, rowspan=4)
-
-    root.grid_columnconfigure(0,weight=1)
-    root.grid_columnconfigure(1,weight=1)
-    root.grid_columnconfigure(2,weight=1)
-    root.grid_columnconfigure(3,weight=1)
-    root.grid_columnconfigure(4,weight=1)
-    root.grid_rowconfigure(0,weight=1)
-    root.grid_rowconfigure(1,weight=1)
-    root.grid_rowconfigure(2,weight=1)
-    root.grid_rowconfigure(3,weight=1)
-    root.grid_rowconfigure(4,weight=1)
-
-    canvas.bind('<Button-1>', canvas_klik)
-
-    root.mainloop()
+    prozor.root.mainloop()
 
 if __name__ == '__main__':
     main()
