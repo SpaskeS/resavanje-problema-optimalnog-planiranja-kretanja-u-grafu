@@ -1,27 +1,13 @@
 import networkx as nx
 import math
-import heapq 
+import heapq
+from cvorKlasa import Cvor
 
-""" From https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-function Dijkstra(Graph, source):
-o  create vertex set Q 
-    for each vertex v in Graph:             // Initialization
-      dist[v] ← INFINITY                  // Unknown distance from source to v
-        prev[v] ← UNDEFINED                 // Previous node in optimal path from source
-        add v to Q                          // All nodes initially in Q (unvisited nodes)
-      dist[source] ← 0                        // Distance from source to source
-      while Q is not empty:
-            u ← vertex in Q with min dist[u]    // Node with the least distance will be selected first
-            remove u from Q 
-          
-          for each neighbor v of u:           // where v is still in Q.
-              alt ← dist[u] + length(u, v)
-              if alt < dist[v]:               // A shorter path to v has been found
-                  dist[v] ← alt 
-                  prev[v] ← u 
-
-      return dist[], prev[]
-"""
+def get_node_by_name(g, name):
+    for node in list(g.nodes):
+        if node.name == name:
+            return node
+    return None
 
 def dijekstra(g,start,end):
     dist = {}
@@ -32,8 +18,8 @@ def dijekstra(g,start,end):
         dist[node] = 100000
         prev[node] = None
         Q.add(node)
-        
-    dist['s'] = 0
+
+    dist[start] = 0
     for key in dist.keys():
         heapq.heappush(h,(dist[key],key))
     while(len(h) > 0):

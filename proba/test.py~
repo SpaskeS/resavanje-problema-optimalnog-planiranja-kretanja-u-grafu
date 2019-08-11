@@ -1,15 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import shortest as sh
-from cvorKlasa import Cvor
 
 from matplotlib import animation
-
-def get_node_by_name(g, name):
-    for node in list(g.nodes):
-        if node.name == name:
-            return node
-    return None
 
 nodes = {'a','s','x','y',
             'b','c','e','f',
@@ -30,18 +23,25 @@ edges = [ ('a','s'),
           ('h','i')
  ]
 
+nodes_dict = {}
+
 obstacles = ['b','c','e','f','g','t']
+
 
 g = nx.Graph()
 
 for node in nodes:
-    c = Cvor(node, node in obstacles, node == 's')
-    g.add_node(c)
+    nodes_dict[node] = None
+    g.add_node(node)
 
-for edge in edges:
-    source = get_node_by_name(g, edge[0])
-    dest = get_node_by_name(g, edge[1])
-    g.add_edge(source, dest)
+
+for obstacle in obstacles:
+    nodes_dict[obstacle] = 'O'
+
+nodes_dict['s'] = 'R'
+
+g.add_edges_from(edges)
+
 
 moves = [('s','a'),('b','s'),('s','y'),
          ('y','x'),('c','b'),('b','s'),
@@ -58,8 +58,16 @@ moves = [('s','a'),('b','s'),('s','y'),
 
 def set_colors():
     colors = []
-    for node1 in g.nodes:
-        colors.append(node1.color())
+    for node in g:
+        if nodes_dict[node] == 'O':
+            colors.append('r')
+        if nodes_dict[node] == 'R':
+            colors.append('g')
+        if nodes_dict[node] == None:
+            colors.append('w')
+        if nodes_dict[node] == 'T':
+            colors.append('y')
+    
     return colors
 
 pos=nx.spring_layout(g)
@@ -68,20 +76,21 @@ def init():
     return
 
 def move(m):
-    source = get_node_by_name(g, m[0])
-    dest = get_node_by_name(g, m[1])
-    dest.robot = source.robot
-    dest.obstacle = source.obstacle
-    source.robot = False
-    source.obstacle = False
-
+    nodes_dict[m[1]] = nodes_dict[m[0]]
+    nodes_dict[m[0]] = None
+    
 
 def animate(i):
     move(moves[i])
     ax.clear()
     nx.draw_networkx(g, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
+   
 
-res = sh.dijekstra(g, get_node_by_name(g, 's'),get_node_by_name(g,'s'))
+    
+
+res = sh.dijekstra(g,'s','t')
+
+
 
 fig, ax = plt.subplots(figsize=(6,4))
 
@@ -89,9 +98,13 @@ fig, ax = plt.subplots(figsize=(6,4))
 ani = animation.FuncAnimation(fig, animate, frames=len(moves), init_func=init,
                               interval=400, repeat=False)
 
-for path in nx.all_simple_paths(g,get_node_by_name(g, 's'),get_node_by_name(g,'t'),10000):
-    for node in path:
-        print(node)
 
+
+for path in nx.all_simple_paths(g,'s','t',10000):
+    print(path)
+
+
+    
+
+    
 plt.show()
-
