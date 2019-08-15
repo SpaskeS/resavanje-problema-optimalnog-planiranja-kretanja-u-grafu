@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import shortest as sh
-from cvorKlasa import Cvorstr(k)
+from cvorKlasa import Cvor
 
 from matplotlib import animation
 
