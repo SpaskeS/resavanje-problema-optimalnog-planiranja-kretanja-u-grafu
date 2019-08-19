@@ -4,6 +4,7 @@ class Cvor:
         self.name = name
         self.obstacle = obstacle
         self.robot = robot
+        self.fork = False
 
     def color(self):
         if self.obstacle == True:
@@ -20,4 +21,3 @@ class Cvor:
 
     def __str__(self):
         return self.name
-
