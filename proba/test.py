@@ -19,7 +19,7 @@ def path_str(path):
 
 def topt(g, path):
     start = get_node_by_name(g, 't')
-    print('topt start: {}'.format(start))
+#    print('topt start: {}'.format(start))
     results =  {}
     path.remove(start)
     # u queue ide cvor, path, broj prepreka i broj rupa
@@ -47,7 +47,7 @@ def topt(g, path):
 
 def preflow(g, path):
     start = path[-1]
-    print('Preflow start: {}'.format(start))
+    #print('Preflow start: {}'.format(start))
     results =  {}
     path.remove(start)
     deep = 0
@@ -77,7 +77,7 @@ def preflow(g, path):
 
 def postflow(g, path):
     start = path[-1]
-    print('\nPostflow path: {}'.format(path_str(path)))
+    #print('\nPostflow path: {}'.format(path_str(path)))
 
     results =  {}
     path.remove(start)
@@ -95,7 +95,7 @@ def postflow(g, path):
 
             for neighbor in adjacent:
                 if neighbor not in visited and neighbor in path:
-                    print('Neighbor: {}'.format(neighbor))
+                    #print('Neighbor: {}'.format(neighbor))
                     if neighbor.obstacle:
                         queue.append((neighbor, search_path + [neighbor], obstacles+1, holes))
                     if neighbor.is_hole() or neighbor.robot:
@@ -163,57 +163,50 @@ def backup_paths(g, path):
                 fork = True
 
             for neighbor in adjacent:
-                print('ajdacents: {}, level {}'.format(str(neighbor), level))
 
                 if neighbor not in visited and level <= 2:
                     queue.append((neighbor, search_path + [neighbor], level))
 
     return results
 
+# vraca bipartitan graf
+def bipartitive_graph(g, source, destination):
 
-def backup(g, path):
-    start = path[0]
-    print('backup start: {}'.format(start))
-    results = []
-    deep = 0
+    bi_graph = nx.Graph()
 
-    if len(g.adj[start]) > 2:
-        fork = True
-    else:
-        fork = False
+    for source_node in source:
+        if source_node.obstacle == True:
+            for dest_node in destination:
+                if dest_node.is_hole() or dest_node.robot:
+                    shortest = nx.shortest_path(g, source_node, dest_node)
+                    bi_graph.add_edge(source_node, dest_node, weight = 1000-len(shortest), shortest_path = shortest)
 
-    path.remove(start)
-    visited, queue = path, [(start, [start], deep)]
+    return bi_graph
+
+# vrace deo grafa kad se odsece grana (node1, node2), bez node2
+def tree_from_edge(g, node1, node2):
+
+    result = [node1]
+    start = node1
+
+    visited, queue = [node2], [start]
 
     while queue:
-        (node, search_path, level) = queue.pop(0)
-
+        node  = queue.pop(0)
         if node not in visited:
             visited.append(node)
-        #    results = search_path
             adjacent = g.adj[node]
-
-            if fork == True:
-                level += 1
-
-            if len(adjacent) > 2:
-                fork = True
-
             for neighbor in adjacent:
-                print('ajdacents: {}, level {}'.format(str(neighbor), level))
+                if neighbor not in visited:
+                    queue.append(neighbor)
+                    result.append(neighbor)
+    return result
 
-                if neighbor not in visited and level <= 2:
-                    results.append(neighbor)
-                    queue.append((neighbor, search_path + [neighbor], level))
-
-    results.reverse()
-
-    return results
 
 nodes = {'a','s','x','y',
             'b','c','e','f',
             'd','g','h','t',
-            'i', 'j', 'z'}
+            'i', 'j', 'z', 'k'}
 
 edges = [ ('a','s'),
           ('s','b'),
@@ -228,12 +221,14 @@ edges = [ ('a','s'),
           ('t','h'),
           ('h','i'),
           ('i', 'j'),
-          ('x', 'z')
+          ('x', 'z'),
+          ('z', 'k')
  ]
 
 obstacles = ['b','c','e','f','g','t']
 
 g = nx.Graph()
+
 
 for node in nodes:
     c = Cvor(node, node in obstacles, node == 's')
@@ -272,6 +267,7 @@ def move(m):
     source = get_node_by_name(g, m[0])
     dest = get_node_by_name(g, m[1])
     dest.robot = source.robot
+
     dest.obstacle = source.obstacle
     source.robot = False
     source.obstacle = False
@@ -282,21 +278,19 @@ def animate(i):
     nx.draw_networkx(g, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
 
 fig, ax = plt.subplots(figsize=(6,4))
-
-
-ani = animation.FuncAnimation(fig, animate, frames=len(moves), init_func=init,
-                              interval=400, repeat=False)
+#ani = animation.FuncAnimation(fig, animate, frames=len(moves), init_func=init,
+#                              interval=400, repeat=False)
 
 for path in nx.all_simple_paths(g,get_node_by_name(g, 's'),get_node_by_name(g,'t'),10000):
 #    print(topt(g, path, 1))
 
     d = topt(g, list(path))
-    print('topt:')
-    for k in d:
-        print(str(k) + path_str(d[k]))
+#    print('topt:')
+#    for k in d:
+#        print(str(k) + path_str(d[k]))
 
-    print('\npath:')
-    print(path_str(path))
+#    print('\npath:')
+#    print(path_str(path))
 
     #opt = minOpt(g, list(path), 0,0,0)
     #print(opt)
@@ -306,18 +300,33 @@ for path in nx.all_simple_paths(g,get_node_by_name(g, 's'),get_node_by_name(g,'t
 #    print('\n')
 
 
-
-
 #    bs = backup(g, list(path))
     #pstflow = postflow(g, list(bs) + list(path))
 
     #print('\npostflow:')
 #    for k in pstflow:
     #    print(str(k) + path_str(pstflow[k]))
+    print('B-------S:')
+    print(path_str(tree_from_edge(g, get_node_by_name(g, 'b'), get_node_by_name(g, 's'))))
+
+    print("S-------B:")
+    print(path_str(tree_from_edge(g, get_node_by_name(g, 's'), get_node_by_name(g, 'b'))))
 
     b_paths = backup_paths(g, path)
-    for b in b_paths:
-        print(path_str(b))
+#    for b in b_paths:
+#        print(path_str(b))
 
+    left = tree_from_edge(g, get_node_by_name(g, 's'), get_node_by_name(g, 'b'))
+    right = tree_from_edge(g, get_node_by_name(g, 'b'), get_node_by_name(g, 's'))
+
+    bi = bipartitive_graph(g, right, left)
+    nx.draw_networkx(bi, with_labels=True, node_color=set_colors(), font_weight='bold')
+    match = nx.max_weight_matching(bi)
+    for m in match:
+        weight = bi.edges[m[0], m[1]]['weight']
+        shortest_path_edge_bi = bi.edges[m[0], m[1]]['shortest_path']
+        print(1000 - weight)
+        print(path_str(shortest_path_edge_bi))
+        print(m[0].name + '_' + m[1].name)
 
 plt.show()
