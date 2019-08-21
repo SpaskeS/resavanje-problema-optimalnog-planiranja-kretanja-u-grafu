@@ -19,7 +19,7 @@ def path_str(path):
 
 def topt(g, path):
     start = get_node_by_name(g, 't')
-    print(start)
+    print('topt start: {}'.format(start))
     results =  {}
     path.remove(start)
     # u queue ide cvor, path, broj prepreka i broj rupa
@@ -47,7 +47,7 @@ def topt(g, path):
 
 def preflow(g, path):
     start = path[-1]
-    print(start)
+    print('Preflow start: {}'.format(start))
     results =  {}
     path.remove(start)
     deep = 0
@@ -77,13 +77,15 @@ def preflow(g, path):
 
 def postflow(g, path):
     start = path[-1]
-    print(path_str(path))
+    print('\nPostflow path: {}'.format(path_str(path)))
+
     results =  {}
     path.remove(start)
     deep = 0
     # u queue ide cvor, path, broj prepreka i broj rupa
     visited, queue = [], [(start, [start], 0, 0)]
     #print(visited)
+
     while queue:
         (node, search_path, obstacles, holes)  = queue.pop(0)
         deep += 1
@@ -92,23 +94,22 @@ def postflow(g, path):
             adjacent = g.adj[node]
 
             for neighbor in adjacent:
-
                 if neighbor not in visited and neighbor in path:
-                    print(neighbor)
+                    print('Neighbor: {}'.format(neighbor))
                     if neighbor.obstacle:
                         queue.append((neighbor, search_path + [neighbor], obstacles+1, holes))
-                        if neighbor.is_hole() or neighbor.robot:
-                            if (obstacles == 0):
-                                holes = holes+1
-                                results[holes] = (search_path + [neighbor], deep)
-                            else:
-                                obstacles = obstacles -1
+                    if neighbor.is_hole() or neighbor.robot:
+                        if (obstacles == 0):
+                            holes = holes+1
+                            results[holes] = (search_path + [neighbor], deep)
+                        else:
+                            obstacles = obstacles -1
 
-                            queue.append((neighbor, search_path + [neighbor], obstacles, holes))
+                        queue.append((neighbor, search_path + [neighbor], obstacles, holes))
     return results
 
 # kad se poziva, edge je poslednja grana iz path
-def minOpt(g, path, edge,n1,n2,n3):
+def minOpt(g, path, edge, n1, n2, n3):
 
     edge_index = path.index(edge)
 
@@ -133,8 +134,46 @@ def minOpt(g, path, edge,n1,n2,n3):
 
     return 0
 
+def backup_paths(g, path):
+    start = path[0]
+
+    results = [[]]
+    deep = 0
+
+    if len(g.adj[start]) > 2:
+        fork = True
+    else:
+        fork = False
+
+    path.remove(start)
+    visited, queue = path, [(start, [start], deep)]
+
+    while queue:
+        (node, search_path, level) = queue.pop(0)
+        results.append(search_path)
+
+        if node not in visited:
+            visited.append(node)
+            adjacent = g.adj[node]
+
+            if fork == True:
+                level += 1
+
+            if len(adjacent) > 2:
+                fork = True
+
+            for neighbor in adjacent:
+                print('ajdacents: {}, level {}'.format(str(neighbor), level))
+
+                if neighbor not in visited and level <= 2:
+                    queue.append((neighbor, search_path + [neighbor], level))
+
+    return results
+
+
 def backup(g, path):
     start = path[0]
+    print('backup start: {}'.format(start))
     results = []
     deep = 0
 
@@ -151,19 +190,25 @@ def backup(g, path):
 
         if node not in visited:
             visited.append(node)
-            results = search_path
+        #    results = search_path
             adjacent = g.adj[node]
+
             if fork == True:
                 level += 1
+
             if len(adjacent) > 2:
                 fork = True
+
             for neighbor in adjacent:
+                print('ajdacents: {}, level {}'.format(str(neighbor), level))
+
                 if neighbor not in visited and level <= 2:
+                    results.append(neighbor)
                     queue.append((neighbor, search_path + [neighbor], level))
 
     results.reverse()
-    return results[:-1]
 
+    return results
 
 nodes = {'a','s','x','y',
             'b','c','e','f',
@@ -231,8 +276,6 @@ def move(m):
     source.robot = False
     source.obstacle = False
 
-
-
 def animate(i):
     move(moves[i])
     ax.clear()
@@ -248,19 +291,33 @@ for path in nx.all_simple_paths(g,get_node_by_name(g, 's'),get_node_by_name(g,'t
 #    print(topt(g, path, 1))
 
     d = topt(g, list(path))
+    print('topt:')
     for k in d:
         print(str(k) + path_str(d[k]))
 
+    print('\npath:')
     print(path_str(path))
+
     #opt = minOpt(g, list(path), 0,0,0)
     #print(opt)
 
-    print(path_str(backup(g, list(path))))
+#    print('\nbackup:')
+#    print(path_str(backup(g, list(path))))
+#    print('\n')
 
-    bs = backup(g, list(path))
-    pstflow = postflow(g, list(bs) + list(path))
 
-    for k in pstflow:
-        print(str(k) + path_str(pstflow[k]))
+
+
+#    bs = backup(g, list(path))
+    #pstflow = postflow(g, list(bs) + list(path))
+
+    #print('\npostflow:')
+#    for k in pstflow:
+    #    print(str(k) + path_str(pstflow[k]))
+
+    b_paths = backup_paths(g, path)
+    for b in b_paths:
+        print(path_str(b))
+
 
 plt.show()
