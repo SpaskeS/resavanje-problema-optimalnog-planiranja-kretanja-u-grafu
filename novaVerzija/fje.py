@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from cvorKlasa import Cvor
-import fje
+import graph as gr
 
 def backup_paths(g, path):
     start = path[0]
@@ -71,13 +71,14 @@ def tree_from_edge(g, node1, node2):
                     result.append(neighbor)
     return result
 
-def match_n(g,source,destination,max_n):
+def match_n(g, source, destination, max_n):
+
     bi_graph = nx.Graph()
     for dest_node in destination:
         if dest_node != source and (dest_node.is_hole() or dest_node.robot) :
             shortest = nx.shortest_path(g, source, dest_node)
             for i in range(max_n):
-                c = Cvor('t',True,False)
+                c = Cvor('t', True, False)
                 bi_graph.add_edge(c, dest_node, weight = 1000-len(shortest), shortest_path = shortest)
 
     return nx.max_weight_matching(bi_graph), bi_graph
@@ -88,31 +89,45 @@ def topt_1(g, path):
     plans = []
     len_path = len(path)
 
-    right = tree_from_edge(g,path[-1], path[-2])
+    right = tree_from_edge(g, path[-1], path[-2])
     match, topt_graph = match_n(g, path[-1], right, len_path)
 
+    print('match size:' + str(len(match)))
+
     # prvi slucaj
-    plans.append(([], 0, 0, 0))
+    plans.append(([], 0, 0, 0, 0))
 
-    print(match)
-    for i in range(len_path):
+    for m1 in match:
+        cost = 0
+        i = 0
         moves = []
+        (path_m1, weight_m1, shortest_m1) = get_match_data(topt_graph, m1)
         for m in match:
-            weight = 999 - topt_graph.edges[m[0], m[1]]['weight']
-            print(weight)
-            if weight <= i:
-                shortest = topt_graph.edges[m[0], m[1]]['shortest_path']
-                shortest = shortest.reverse()
-                print(shortest)
-                for i in len(shortest):
-                    if path[i].obstacle:
-                        moves.append((path[i], path[i-1]))
+            (path_name, weight, shortest) = get_match_data(topt_graph, m)
 
-        plans.append((moves, i, 0, 0))
+            if weight <= weight_m1:
+                i += 1
+                cost += weight
+                print(path_name + ' ' + gr.path_str(shortest))
+
+                moves.append((path[-1], shortest[-1]))
+
+        plans.append((moves, i, 0, 0, cost))
 
     return plans
 
+def print_plans(plans):
 
+    for plan in plans:
+        moves, n1, n2, n3, cost = plan
+        print('PLAN: ')
+        s = '['
+        for pair in moves:
+            s = s + ' (' + pair[0].name + ', ' + pair[1].name + ') '
+
+        print(s + ']')
+        print('ns: ' + str(n1) + ' ' + str(n2) + ' ' + str(n3))
+        print('cost: ' + str(cost) + '\n')
 
 def get_match_data(bi, m):
     path_name = ''
@@ -125,33 +140,6 @@ def get_match_data(bi, m):
     return(path_name, weight, shortest_path)
 
 
-def topt(g, path):
-    start = get_node_by_name(g, 't')
-#    print('topt start: {}'.format(start))
-    results =  {}
-    path.remove(start)
-    # u queue ide cvor, path, broj prepreka i broj rupa
-    visited, queue = path, [(start, [start], 0, 0)]
-    #print(visited)
-    while queue:
-        (node, search_path, obstacles, holes)  = queue.pop(0)
-        if node not in visited:
-            visited.append(node)
-            adjacent = g.adj[node]
-            for neighbor in adjacent:
-                if neighbor not in visited:
-                    if neighbor.obstacle:
-                        queue.append((neighbor, search_path + [neighbor], obstacles+1, holes))
-                    if neighbor.is_hole():
-                        if (obstacles == 0):
-                            holes = holes+1
-                            results[holes] = search_path + [neighbor]
-                        else:
-                            obstacles = obstacles -1
-
-                        queue.append((neighbor, search_path + [neighbor], obstacles, holes))
-
-    return results
 
 def preflow(g, path):
     start = path[-1]
@@ -219,25 +207,20 @@ def postflow(g, path):
 # kad se poziva, edge je poslednja grana iz path
 def minOpt(g, path, edge, n1, n2, n3):
 
-    edge_index = path.index(edge)
+    (node1, node2) = edge
 
-    start = path[0]
-    pflow = preflow(g, path)
-
-    plan = (0,edge,[[],[],[]])    # (cost, edge, [[n1] [n2] [n3]])
-
-    for node in path:
-        if len(g.adj[node]) > 2:
-            node.fork = True
+    if node2.fork:
 
 
-    if path[edge_index-1].fork == True:
-        plan2 = minOpt(g, list(path).remove(edge), path[edge_index-1],n1,n2,n3)
-    else:
-        if pflow.contains(n1):
-            cost, edge, n1, n2, n3 = plan
-            plan = (cost+pflow[n1][1], edge, n1, n2, n3)
-        if path[edge_index].fork == True:
-            return 1
+
+
+
+
+
+
+
+
+
+
 
     return 0
