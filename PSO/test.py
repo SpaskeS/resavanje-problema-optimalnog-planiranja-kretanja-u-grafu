@@ -7,7 +7,7 @@ from matplotlib import animation
 
 
 
-problem = ProblemGenerator().getByName('p2')
+problem = ProblemGenerator().getByName('p3')
 
 '''
 print(problem)
@@ -56,7 +56,7 @@ def set_colors():
     return colors
 
 def init():
-    nx.draw_networkx(problem.graph, pos=pos, with_labels=True, node_color=set_colors(), font_weight='bold'   )
+    #nx.draw_networkx(problem.graph, pos=pos, with_labels=True, node_color=set_colors(), font_weight='bold'   )
     return
 
 def move(m):
@@ -72,13 +72,15 @@ def move(m):
 
 def animate(i):
 
+    if i > 0:
+        move(moves[i-1])
     ax.clear()
     nx.draw_networkx(problem.graph, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
-    move(moves[i])
+
 
 fig, ax = plt.subplots(figsize=(6,4))
-ani = animation.FuncAnimation(fig, animate, frames=len(moves), init_func=init,
-                              interval=3000, repeat=False)
+ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
+                              interval=1000, repeat=False)
 
 util.plt_show()
 
