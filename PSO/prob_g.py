@@ -3,12 +3,14 @@ import problem as prbl
 class ProblemGenerator:
 
     def __init__(self):
-        self.testproblems  = { "p1" : {
+        self.testproblems  = {
+        "p1" : {
             "nodes":  ['a','s','x','y',
                 'b','c','e','f',
                 'd','g','h','t',
                 'i', 'j', 'z', 'k'],
-        "edges" : [     ('a','s'),
+
+            "edges" : [('a','s'),
                       ('s','b'),
                       ('x','y'),
                       ('y','s'),
@@ -23,16 +25,29 @@ class ProblemGenerator:
                       ('i', 'j'),
                       ('x', 'z'),
                       ('z', 'k')],
+
         "obstacles" : ['b','c','e','f','g','t', 'h'],
+
         "start" : 's',
+
         "target" : 't'
         },
-                "p2": {
+
+        "p2": {
                     "nodes": ['s','a','t', 'z', 'k'],
                     "edges": [ ('s','a'),('a','t'), ('a', 'z'), ('z', 'k')],
                     "obstacles" : ['a'],
                     "start": 's',
-                    "target": 't'}
+                    "target": 't'
+              },
+
+        "p3": {
+                "nodes": ['s', 'a', 'b', 'c', 'd', 't'],
+                "edges": [('s', 'a'), ('a', 'b'), ('a', 'c'), ('b', 'd'),('b', 't')],
+                "obstacles": ['a', 'b'],
+                "start": 's',
+                "target": 't'
+        }
 
         }
 

@@ -56,13 +56,13 @@ class Solver:
 
         return moves
 
-    def solve(self, problem,path):
+    def solve_brute_force(self, problem,path):
 
         queue = [[]]
         graph = problem.graph.copy()
         while queue:
             moves = queue.pop(0)
-            #print(moves)
+            print(moves)
             p = prbl.Problem(nodes=graph.nodes,
                              edges=graph.edges,
                              obstacles = [])

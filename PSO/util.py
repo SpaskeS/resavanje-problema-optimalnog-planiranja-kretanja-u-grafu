@@ -23,4 +23,9 @@ def plt_graph(graph):
                          node_color=colors,
                          font_weight = 'bold')
 
-        plt.show()
+
+
+def plt_show():
+    plt.show()
+
+        #plt.show()
