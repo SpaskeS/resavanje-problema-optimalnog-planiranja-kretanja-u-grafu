@@ -7,34 +7,25 @@ class Solver:
         self.problem = copy.deepcopy(problem)
         self.graph = problem.graph
         self.path = path
-        self.obstacles_on_path = []
         self.t = 0
-
-        for node in path:
-            if node in problem.obstacles:
-                self.obstacles_on_path.append(node)
 
 
     def possible_robot_moves(self):
         robot_node = self.problem.robot
         robot_neighbors = self.graph.adj[robot_node]
         moves = []
-
         for neighbor in robot_neighbors:
             if self.problem.is_hole(neighbor):
-                moves.append((robot_node, neighbor, 1))
-
+                    moves.append((robot_node, neighbor, 1))
         return moves
 
     def possible_obstacle_moves(self, obstacle):
 
         obstacle_neighbors =  self.graph.adj[obstacle]
         moves = []
-
         for neighbor in obstacle_neighbors:
             if self.problem.is_hole(neighbor) and neighbor != self.problem.robot:
                 moves.append((obstacle, neighbor, 1))
-
             else:
                 if neighbor != self.problem.robot:
                     moves.extend(self.find_nearest_hole(self.graph, neighbor))
@@ -43,10 +34,8 @@ class Solver:
 
     def possible_obstacles_moves(self):
         moves = []
-
-        for obstacle in self.obstacles_on_path:
+        for obstacle in self.problem.obstacles:
             moves.extend(self.possible_obstacle_moves(obstacle))
-
         return moves
 
     def possible_moves(self):
@@ -56,13 +45,24 @@ class Solver:
 
         return moves
 
-    def solve_brute_force(self, problem,path):
 
-        queue = [[]]
+    def state(self,p):
+        ob = p.obstacles[:]
+        ob.sort()
+        st = "#".join(ob)
+        return ( st , p.robot)
+
+    def solve_brute_force(self, problem,path):
+        r = 0
+        visited = set([])
+        queue = [([],r)]
         graph = problem.graph.copy()
         while queue:
-            moves = queue.pop(0)
-            print(moves)
+            moves,round = queue.pop(0)
+            if (round % 1000 == 0):
+                print ("Round = "  + str(round))
+                print ("Visited = " + str(len(visited)))
+
             p = prbl.Problem(nodes=graph.nodes,
                              edges=graph.edges,
                              obstacles = [])
@@ -70,22 +70,22 @@ class Solver:
             p.start = problem.start
             p.target = problem.target
             p.robot = problem.robot
-
             for o in problem.obstacles:
                 p.obstacles.append(o)
             p.moves(moves)
-            if p.target == p.robot:
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                return moves
-            sol = Solver(p,path)
-            possible_moves = sol.possible_moves()
-
-
-            for move in possible_moves:
-                new_moves  = copy.copy(moves)
-                new_moves.append(move)
-                queue.append(new_moves)
-
+            st = self.state(p)
+            if ( st not in visited):
+                visited.add(st)
+                if p.target == p.robot:
+                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    return moves
+                sol = Solver(p,path)
+                possible_moves = sol.possible_moves()
+                for move in possible_moves:
+                    new_moves  = copy.copy(moves)
+                    new_moves.append(move)
+                    r = r + 1
+                    queue.append((new_moves,r ) )
     def find_nearest_hole(self, graph, start):
 
         visited, queue = [], [(start, [start])]

@@ -5,9 +5,7 @@ from solver import Solver
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
-
-
-problem = ProblemGenerator().getByName('p3')
+problem = ProblemGenerator().getByName('p1')
 
 '''
 print(problem)
@@ -75,7 +73,7 @@ def animate(i):
     if i > 0:
         move(moves[i-1])
     ax.clear()
-    nx.draw_networkx(problem.graph, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
+    nx.draw_networkx(problem.graph, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold')
 
 
 fig, ax = plt.subplots(figsize=(6,4))
@@ -83,8 +81,3 @@ ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
                               interval=1000, repeat=False)
 
 util.plt_show()
-
-
-#ani = animation.FuncAnimation(fig, animate, frames=len(moves), init_func = init, interval=400, repeat=False)
-
-#print(solver.find_nearest_hole(problem.graph, 't'))

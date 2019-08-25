@@ -47,14 +47,21 @@ class ProblemGenerator:
                 "obstacles": ['a', 'b'],
                 "start": 's',
                 "target": 't'
-        }
+        },
+        "p4": {
+            "nodes": ['s','a','b','c','t','a1','b1','c1'],
+            "edges": [('s','a'),('a','b'),('b','c'),('c','t'),('a','a1'),('b','b1'),('c','c1')],
+            "obstacles": ['a','b','c'],
+            "start": 's',
+            "target": 't'
+            }
 
         }
 
     def getByName(self, name):
 
         if(not name in self.testproblems ):
-			raise RuntimeError("There is no problem with name " + name)
+            raise RuntimeError("There is no problem with name " + name)
         p = self.testproblems[name]
         return prbl.Problem(nodes=p["nodes"],
                             edges=p["edges"],
