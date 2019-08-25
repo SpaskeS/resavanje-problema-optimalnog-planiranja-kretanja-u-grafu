@@ -92,7 +92,7 @@ def topt_1(g, path):
     right = tree_from_edge(g, path[-1], path[-2])
     match, topt_graph = match_n(g, path[-1], right, len_path)
 
-    print('match size:' + str(len(match)))
+    print('match size: ' + str(len(match)) + '\n')
 
     # prvi slucaj
     plans.append(([], 0, 0, 0, 0))
@@ -108,15 +108,18 @@ def topt_1(g, path):
             if weight <= weight_m1:
                 i += 1
                 cost += weight
-                print(path_name + ' ' + gr.path_str(shortest))
 
+                print(path_name + ' ' + gr.path_str(shortest) + ' ' + str(weight))
                 moves.append((path[-1], shortest[-1]))
 
         plans.append((moves, i, 0, 0, cost))
 
+    print('\n')
     return plans
 
 def print_plans(plans):
+
+    print('TOPT plans: ')
 
     for plan in plans:
         moves, n1, n2, n3, cost = plan
@@ -208,18 +211,6 @@ def postflow(g, path):
 def minOpt(g, path, edge, n1, n2, n3):
 
     (node1, node2) = edge
-
-    if node2.fork:
-
-
-
-
-
-
-
-
-
-
 
 
 

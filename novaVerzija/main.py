@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from cvorKlasa import Cvor
-import fje as f
+import functions as f
 import graph as gr
 
 from matplotlib import animation
@@ -50,7 +50,7 @@ def init():
     return
 
 def animate(i):
-    gr.move(moves[i],g)
+    #gr.move(moves[i],g)
     ax.clear()
     nx.draw_networkx(g, pos=pos,  with_labels=True, node_color = gr.set_colors(g), font_weight='bold')
 
@@ -65,38 +65,31 @@ def main():
     all_paths = nx.all_simple_paths(g, s, t, 10000)
 
     for path in all_paths:
-        print(gr.path_str(path))
-        print('topt: ')
+        print('path: ' + gr.path_str(path))
+
         plans = f.topt_1(g, path)
 
         f.print_plans(plans)
 
+        print('backup paths:')
         b_paths = f.backup_paths(g, path)
-#        for b in b_paths:
-#        print(path_str(b))
+        for b in b_paths:
+            print(gr.path_str(b))
 
         left = f.tree_from_edge(g, gr.get_node_by_name(g, 's'), gr.get_node_by_name(g, 'b'))
         right = f.tree_from_edge(g, gr.get_node_by_name(g, 'b'), gr.get_node_by_name(g, 's'))
 
-    #    print('tree B----->S:')
-    #    print(gr.path_str(right))
-
-    #    print('tree S----->B:')
-    #    print(gr.path_str(left))
-        print('\n')
-
         bi = f.bipartitive_graph(g, right, left)
-
         #nx.draw_networkx(bi, with_labels=True, font_weight='bold')
 
         match = nx.max_weight_matching(bi)
 
+        plt.show()
+'''
         for m in match:
             (path_name, weight, shortest_path_edge_bi) = f.get_match_data(bi, m)
             print(path_name + ' : ' + gr.path_str(shortest_path_edge_bi) + ', weight: ' + str(weight))
-
-        plt.show()
-
+'''
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from cvorKlasa import Cvor
-import fje
+import functions as f
 
 from matplotlib import animation
 
