@@ -4,6 +4,35 @@ class ProblemGenerator:
 
     def __init__(self):
         self.testproblems  = {
+
+        "p0" : {
+            "nodes":  ['a','s','x','y',
+                'b','c','e','f',
+                'd','g','h','t',
+                'i'],
+            "edges" : [('a','s'),
+                      ('s','b'),
+                      ('x','y'),
+                      ('y','s'),
+                      ('f','d'),
+                      ('b','c'),
+                      ('c','e'),
+                      ('e','f'),
+                      ('f','g'),
+                      ('g','t'),
+                      ('t','h'),
+                      ('h','i'),
+                      ],
+
+        "obstacles" : ['b','c','e','f','g','t'],
+
+        "start" : 's',
+
+        "target" : 't'
+        },
+
+
+
         "p1" : {
             "nodes":  ['a','s','x','y',
                 'b','c','e','f',
