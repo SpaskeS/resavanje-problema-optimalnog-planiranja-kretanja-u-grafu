@@ -71,7 +71,7 @@ class Solver:
     def do_genetic(self,queue,graph,obstacles,r,visited):
         newqueue = []
         for i in range(self.pop_size+1):
-            if (rnd.random()>self.best):
+            if (rnd.random() > self.best):
                 score,moves,round = queue.pop(rnd.randint(0, len(queue)-1))
             else:
                 score,moves,round = queue.pop(0)

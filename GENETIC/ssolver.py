@@ -1,5 +1,36 @@
 import heapq as heap
 import networkx as nx
+
+POPULATION_SIZE = 100
+ELITE = 9
+MUTATION_RATE = 0.05
+CROSSOVER_RATE = 0.9
+GENERATION_NUMBER = 1000
+
+def remove_jumps(moves):
+
+    res = []
+
+    for move in moves:
+        if move[2] > 1:
+            move[3].reverse()
+            res.extend(make_moves_from_path(move[3]))
+        else:
+            res.append(move)
+
+    return res
+
+
+def make_moves_from_path(path):
+
+    moves = []
+    p = path[:]
+
+    for i in range(len(p)-1):
+        moves.append((p[i+1], p[i], 1, [p[i+1], p[i]]))
+    return moves
+
+
 def find_nearest_hole(o,r,graph, start):
     visited, queue = [], [(start, [start])]
     results = []
@@ -20,7 +51,8 @@ def find_nearest_hole(o,r,graph, start):
 
     moves = []
     for res in results:
-        moves.append((res[0], res[-1], len(res)-1))
+
+        moves.append((res[0], res[-1], len(res)-1, res))
     return moves
 
 def move_robot(o,r,graph,node_from,node_to):
@@ -63,27 +95,28 @@ def make_moves(o,r,graph,moves):
         obstacles,robot = make_move(obstacles,robot,graph,move[0],move[1])
     return (obstacles,robot)
 
-def is_hole(o,r,node):
+def is_hole(o, r, node):
     if (node not in o):
         return True
     return False
 
-def possible_robot_moves(o,r,graph):
+def possible_robot_moves(o, r, graph):
     moves=[]
     robot_node = r
     robot_neighbors = graph.adj[r]
 
     for neighbor in robot_neighbors:
         if is_hole(o,r,neighbor):
-            moves.append((robot_node, neighbor, 1))
+            moves.append((robot_node, neighbor, 1, [robot_node, neighbor]))
     return moves
 
 def possible_obstacle_moves(o,r,graph,obstacle):
     obstacle_neighbors =  graph.adj[obstacle]
     moves = []
+
     for neighbor in obstacle_neighbors:
         if is_hole(o,r,neighbor) and neighbor != r:
-            moves.append((obstacle, neighbor, 1))
+            moves.append((obstacle, neighbor, 1, [obstacle, neighbor]))
         else:
             if neighbor != r:
                 moves.extend(find_nearest_hole(o,r,graph, neighbor))
@@ -103,7 +136,6 @@ def possible_moves(o,r,graph):
     return moves
 
 
-
 def color(o,r,graph,node,target,start):
         if (node in o and node == target):
             return 'c'
@@ -117,14 +149,6 @@ def color(o,r,graph,node,target,start):
             return 'g'
         return 'w'
 
-def fitnes_fun(graph,obstacles,robot,target,moves):
-    shortest = nx.shortest_path(graph,robot,target)
-    score = -len(shortest)- moves
-    for obstacle in obstacles:
-        if obstacle in shortest:
-            score = score - 3
-    return -score
-
 
 
 def solve_heap(o,r,graph,t):
@@ -137,8 +161,9 @@ def solve_heap(o,r,graph,t):
         st = ('#'.join(obstacles),robot)
         if ( st not in visited ):
             visited.add(st)
-            score = fitnes_fun(graph,obstacles,robot,t,len(moves))
+            score = fitness_fun(graph,obstacles,robot,t,len(moves))
             pm = possible_moves(obstacles,robot,graph)
+
             for move in pm:
                 new_moves = moves[:]
                 new_moves.append(move)
@@ -146,6 +171,7 @@ def solve_heap(o,r,graph,t):
                 if t == newrobot:
                     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     return new_moves
+
                 round = round+1
                 if (round % 100000 == 0):
                     print ("Visited = " + str(len(visited)))
@@ -168,9 +194,38 @@ def solve_brute_force(o,r,graph,t):
                 new_moves.append(move)
                 newobstacles,newrobot = make_moves(obstacles,robot,graph,[move])
                 if t == newrobot:
-                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    print("f!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     return new_moves
                 round = round+1
                 if (round % 100000 == 0):
                     print ("Visited = " + str(len(visited)))
                 queue.append((new_moves,newobstacles,newrobot))
+
+def fitness_fun(graph, obstacles, robot, target, moves):
+    shortest = nx.shortest_path(graph,robot,target)
+    score = -len(shortest)- moves
+    for obstacle in obstacles:
+        if obstacle in shortest:
+            score = score - 1
+
+    return -score
+
+def solve_genetic(o, r, graph, t):
+
+    generetaions_number = 0
+    population = possible_moves(o, r, graph)
+    for chromosome in population:
+        score = fitness_fun(graph, o, r, t, chromosome)
+
+
+    while generetaions_number < GENERATION_NUMBER:
+
+
+
+        generetaions_number += 1
+
+    print('\n')
+    scores = []
+
+
+    return

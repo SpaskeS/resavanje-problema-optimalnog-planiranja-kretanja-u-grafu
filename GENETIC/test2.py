@@ -23,6 +23,7 @@ if( 1 == 2):
                            problem.graph,
                            problem.target)
 
+    moves = ssolver.remove_jumps(moves)
     print('BRUTE FORCE:')
     print(moves)
     end = time.time()
@@ -65,7 +66,7 @@ def animate(i):
     nx.draw_networkx(problem.graph, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
 
 
-if 1 == 2 :
+if 1 ==  1:
     problem = ProblemGenerator().getByName(what)
     s1 = time.time()
     moves = ssolver.solve_heap(
@@ -74,15 +75,19 @@ if 1 == 2 :
         problem.graph,
         problem.target)
 
-    print('HEAP:')
+    print('\n\n')
+    moves = ssolver.remove_jumps(moves)
+#    print('HEAP:')
+    print('MOVES POSLE:')
     print(moves)
     end = time.time()
     print ( "Time + " + str((end-s1)))
 
-if 1 == 1 :
+if 1 == 2 :
     problem = ProblemGenerator().getByName(what)
     s1 = time.time()
     moves = solver.solve_genetic(problem)
+
     print('GENTIC:')
     print(moves)
     end = time.time()
@@ -92,5 +97,15 @@ if 1 == 1 :
 fig, ax = plt.subplots(figsize=(6,4))
 ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
                               interval=1000, repeat=False)
+
+
+
+pop = ssolver.solve_genetic(
+        problem.obstacles,
+        problem.robot,
+        problem.graph,
+        problem.target)
+
+
 
 util.plt_show()
