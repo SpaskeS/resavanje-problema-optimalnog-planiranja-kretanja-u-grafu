@@ -7,33 +7,56 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
 
+test_instance =  'p1'
+problem = ProblemGenerator().getByName(test_instance)
 
-what =  'p1'
-problem = ProblemGenerator().getByName(what)
+#alg = 'b'
+#alg = 'h'
+alg = 'g'
 
+s1 = time.time()
 
-solver = Solver(problem)
+if alg == 'b':
 
-
-if( 1 == 2):
-    s1 = time.time()
-#    moves = solver.solve_brute_force(problem)
     moves = ssolver.solve_brute_force(problem.obstacles,
-                           problem.robot,
-                           problem.graph,
-                           problem.target)
+                                      problem.robot,
+                                      problem.graph,
+                                      problem.target)
 
     moves = ssolver.remove_jumps(moves)
     print('BRUTE FORCE:')
     print(moves)
-    end = time.time()
-    print ( "Time + " + str((end-s1)))
 
 
-problem = ProblemGenerator().getByName(what)
+elif alg == 'h':
+
+    moves = ssolver.solve_heap(problem.obstacles,
+                               problem.robot,
+                               problem.graph,
+                               problem.target)
+
+    print('\n\n')
+    moves = ssolver.remove_jumps(moves)
+    print('HEAP:')
+    print(moves)
+
+elif alg == 'g':
+
+    moves = ssolver.solve_genetic(problem.obstacles,
+                                  problem.robot,
+                                  problem.graph,
+                                  problem.target)
+
+    print('\n\n')
+    #moves = ssolver.remove_jumps(moves)
+    print('GENETIC:')
+    print(moves)
 
 
-solver = Solver(problem)
+
+end = time.time()
+print ( "Time + " + str((end-s1)))
+
 
 pos = nx.spring_layout(problem.graph)
 
@@ -59,14 +82,46 @@ def move(m):
 
 
 def animate(i):
-
     ax.clear
     if(i > 0 ):
         move(moves[i-1])
     nx.draw_networkx(problem.graph, pos=pos,  with_labels=True, node_color=set_colors(), font_weight='bold'   )
 
 
-if 1 ==  1:
+fig, ax = plt.subplots(figsize=(6,4))
+ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
+                              interval=1000, repeat=False)
+
+util.plt_show()
+
+
+'''
+pop = ssolver.solve_genetic(
+        problem.obstacles,
+        problem.robot,
+        problem.graph,
+        problem.target)
+
+'''
+
+
+'''
+
+if( 1 == 2):
+    s1 = time.time()
+#    moves = solver.solve_brute_force(problem)
+    moves = ssolver.solve_brute_force(problem.obstacles,
+                           problem.robot,
+                           problem.graph,
+                           problem.target)
+
+    moves = ssolver.remove_jumps(moves)
+    print('BRUTE FORCE:')
+    print(moves)
+    end = time.time()
+    print ( "Time + " + str((end-s1)))
+
+if 1 == 1:
     problem = ProblemGenerator().getByName(what)
     s1 = time.time()
     moves = ssolver.solve_heap(
@@ -77,7 +132,7 @@ if 1 ==  1:
 
     print('\n\n')
     moves = ssolver.remove_jumps(moves)
-#    print('HEAP:')
+    print('HEAP:')
     print('MOVES POSLE:')
     print(moves)
     end = time.time()
@@ -92,20 +147,4 @@ if 1 == 2 :
     print(moves)
     end = time.time()
     print ( "Time + " + str((end-s1)))
-
-
-fig, ax = plt.subplots(figsize=(6,4))
-ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
-                              interval=1000, repeat=False)
-
-
-
-pop = ssolver.solve_genetic(
-        problem.obstacles,
-        problem.robot,
-        problem.graph,
-        problem.target)
-
-
-
-util.plt_show()
+'''

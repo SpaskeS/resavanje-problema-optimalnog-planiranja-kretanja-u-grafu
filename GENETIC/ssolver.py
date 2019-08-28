@@ -1,11 +1,7 @@
 import heapq as heap
 import networkx as nx
-
-POPULATION_SIZE = 100
-ELITE = 9
-MUTATION_RATE = 0.05
-CROSSOVER_RATE = 0.9
-GENERATION_NUMBER = 1000
+import copy
+import random
 
 def remove_jumps(moves):
 
@@ -79,6 +75,7 @@ def move_obstacle(o,r,graph,node_from,node_to):
 
     obstacles.append(node_to)
     obstacles.remove(node_from)
+
     return(obstacles,robot)
 
 def make_move(o,r,graph,node_from,node_to):
@@ -86,6 +83,7 @@ def make_move(o,r,graph,node_from,node_to):
         return move_robot(o,r,graph,node_from,node_to)
     if ( node_from in o):
         return move_obstacle(o,r,graph,node_from,node_to)
+
     raise RuntimeError('Cant move from ' + node_from)
 
 def make_moves(o,r,graph,moves):
@@ -201,31 +199,235 @@ def solve_brute_force(o,r,graph,t):
                     print ("Visited = " + str(len(visited)))
                 queue.append((new_moves,newobstacles,newrobot))
 
-def fitness_fun(graph, obstacles, robot, target, moves):
+
+def create_state(o, r):
+
+    o.sort()
+    return '#'.join(o) + '__________' + r
+
+
+ELITE = 9
+MUTATION_RATE = 0.05
+CROSSOVER_RATE = 0.9
+MAX_GENERATION_NUMBER = 100
+TOURNAMENT_SIZE = 5
+REPRODCTION_SIZE = 10
+
+
+def fitness_fun(graph, obstacles, robot, target, num_of_moves):
     shortest = nx.shortest_path(graph,robot,target)
-    score = -len(shortest)- moves
+    score = -len(shortest) - num_of_moves
+
     for obstacle in obstacles:
         if obstacle in shortest:
             score = score - 1
 
     return -score
 
+
+def tournament_selection(chromosomes, graph, target):
+
+    winner = None
+    tournament_size = min(TOURNAMENT_SIZE, len(chromosomes))
+
+    selected = random.sample(chromosomes, tournament_size)
+
+    best_score = float('inf')
+
+    for s in selected:
+        obstacles, robot, moves, state_set = s
+        move_length = 0
+        for move in moves:
+            move_length += move[2]
+
+        score = fitness_fun(graph, obstacles, robot, target, move_length)
+
+        if score < best_score:
+            winner = s
+            best_score = score
+
+    return winner, best_score
+
+
+def selection(chromosomes, graph, target):
+
+    selected = []
+    print('len: ' + str(len(chromosomes)))
+    for i in range(REPRODCTION_SIZE):
+        winner, score = tournament_selection(chromosomes, graph, target)
+        selected.append(winner)
+
+    return selected
+
+
+def crossover(parent1, parent2, o, r, graph):
+
+    o1, r1, moves1, state_set1 = parent1
+    o2, r2, moves2, state_set2 = parent2
+
+    break_point = random.randrange(1, len(moves1))
+    child1_moves = []
+    child2_moves = []
+
+    new_o = o[:]
+    new_r = r
+
+    child1_state_set = set()
+    child2_state_set = set()
+
+    initial_state = create_state(new_o, new_r)
+
+    child1_state_set.add(initial_state)
+    child2_state_set.add(initial_state)
+
+    for i in range(0, break_point):
+
+        new_o, new_r = make_move(new_o, new_r, graph, moves1[i][0], moves1[i][1])
+        new_state = create_state(new_o, new_r)
+        if new_state not in child1_state_set:
+            child1_state_set.add(new_state)
+            child1_moves.append(moves1[i])
+
+    pm = possible_moves(new_o, new_r, graph)
+
+    for i in range(break_point, len(moves2)):
+        if moves2[i] in pm:
+            new_o, new_r = make_move(new_o, new_r, graph, moves2[i][0], moves2[i][1])
+            new_state = create_state(new_o, new_r)
+            if new_state not in child1_state_set:
+                child1_state_set.add(new_state)
+                child1_moves.append(moves2[i])
+                pm = possible_moves(new_o, new_r, graph)
+
+
+    child1 = (new_o, new_r, child1_moves, child1_state_set)
+
+    return child1
+
+
+def mutation(moves):
+    return
+
+def create_generation(selected, graph, t):
+
+    chromosomes = []
+
+    for s in selected:
+        o, r, moves, state_set = s
+
+        pm = possible_moves(o, r, graph)
+
+        for move in pm:
+
+            new_moves = moves[:]
+            new_state_set =  copy.copy(state_set)
+            new_obstacles, new_robot = make_move(o, r, graph, move[0], move[1])
+
+            new_state = create_state(new_obstacles, new_robot)
+            if new_state not in new_state_set:
+
+                new_moves.append(move)
+                new_state_set.add(new_state)
+
+                new_c = (new_obstacles, new_robot, new_moves, new_state_set)
+
+                chromosomes.append(new_c)
+
+    return chromosomes
+
+def initial_population(chromosome, graph, t):
+
+    chromosomes = []
+
+    (o, r, moves, state_set) = chromosome
+
+    pm = possible_moves(o, r, graph)
+
+    for move in pm:
+        new_moves = moves[:]
+        new_state_set =  copy.copy(state_set)
+        new_obstacles, new_robot = make_move(o, r, graph, move[0], move[1])
+        new_moves.append(move)
+
+        new_state = create_state(new_obstacles, new_robot)
+        new_state_set.add(new_state)
+
+        new_c = (new_obstacles, new_robot, new_moves, new_state_set)
+
+        chromosomes.append(new_c)
+
+    return chromosomes
+
 def solve_genetic(o, r, graph, t):
 
-    generetaions_number = 0
-    population = possible_moves(o, r, graph)
+    generations_number = 0
+    state_set = set()
+
+    state = create_state(o, r)
+
+    state_set.add(state)
+    chromosome = (o[:], r, [], state_set)
+
+    initial = initial_population(chromosome, graph, t)
+
+    solved = False
+    while generations_number < 60 or solved == True:
+        if generations_number == 0:
+            selected = selection(initial, graph, t)
+        else:
+            selected = selection(population, graph, t)
+
+        population = create_generation(selected, graph, t)
+
+        for p in population:
+            obs, rob, moves, state_set = p
+            if rob == t:
+                solved = True
+                print('kRA')
+                print(p)
+                return
+
+
+        generations_number += 1
+
+
+    print('parent1:')
+    print(population[0])
+
+    print('\n\nparent2: ')
+    print(population[1])
+
+    print('\nchild:')
+    print(crossover(population[0], population[1], o, r, graph))
+    print(generations_number)
+
+
+#    print('\n\n')
+#    print('WINNER : ' + str(tournament_selection(initial, graph, t)))
+
+    selected_chromosomes = selection(initial, graph, t)
+#    print('\n\nSELECTED FROM SELECTION:')
+#    for selected in selected_chromosomes:
+#        print(selected)
+
+    new_generation = create_generation(selected_chromosomes, graph, t)
+#    print('NEW GENERATION: ')
+#    for c in new_generation:
+
+#        print(c)
+
+#    print('NEW generation size: ' + str(len(new_generation)))
+
+
+    return 1
+
+'''
     for chromosome in population:
-        score = fitness_fun(graph, o, r, t, chromosome)
+        score = fitness_fun(graph, o, r, t, len(chromosome))
 
-
-    while generetaions_number < GENERATION_NUMBER:
+    while generations_number < GENERATION_NUMBER:
 
 
 
         generetaions_number += 1
-
-    print('\n')
-    scores = []
-
-
-    return
+'''

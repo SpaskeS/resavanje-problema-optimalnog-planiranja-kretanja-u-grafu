@@ -77,6 +77,7 @@ class ProblemGenerator:
                 "start": 's',
                 "target": 't'
         },
+
         "p4": {
             "nodes": ['s','a','b','c','t','a1','b1','c1'],
             "edges": [('s','a'),('a','b'),('b','c'),('c','t'),('a','a1'),('b','b1'),('c','c1')],
