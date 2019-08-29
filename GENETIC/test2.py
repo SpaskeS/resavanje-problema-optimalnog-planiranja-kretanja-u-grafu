@@ -1,13 +1,12 @@
 from prob_g import ProblemGenerator
 import util
 import networkx as nx
-from solver2 import Solver
 import ssolver
 import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
 
-test_instance =  'p1'
+test_instance =  'p4'
 problem = ProblemGenerator().getByName(test_instance)
 
 #alg = 'b'
@@ -26,6 +25,7 @@ if alg == 'b':
     moves = ssolver.remove_jumps(moves)
     print('BRUTE FORCE:')
     print(moves)
+    print('SOLVED IN  ' + str(len(moves)) + ' MOVES')
 
 
 elif alg == 'h':
@@ -39,6 +39,7 @@ elif alg == 'h':
     moves = ssolver.remove_jumps(moves)
     print('HEAP:')
     print(moves)
+    print('SOLVED IN  ' + str(len(moves)) + ' MOVES')
 
 elif alg == 'g':
 
@@ -51,11 +52,12 @@ elif alg == 'g':
     #moves = ssolver.remove_jumps(moves)
     print('GENETIC:')
     print(moves)
+    print('SOLVED IN  ' + str(len(moves)) + ' MOVES')
 
 
 
 end = time.time()
-print ( "Time + " + str((end-s1)))
+print ("Time + " + str((end-s1)))
 
 
 pos = nx.spring_layout(problem.graph)
@@ -93,16 +95,6 @@ ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
                               interval=1000, repeat=False)
 
 util.plt_show()
-
-
-'''
-pop = ssolver.solve_genetic(
-        problem.obstacles,
-        problem.robot,
-        problem.graph,
-        problem.target)
-
-'''
 
 
 '''

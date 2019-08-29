@@ -7,9 +7,10 @@ class ProblemGenerator:
 
         "p0" : {
             "nodes":  ['a','s','x','y',
-                'b','c','e','f',
-                'd','g','h','t',
-                'i'],
+                       'b','c','e','f',
+                       'd','g','h','t',
+                       'i'],
+
             "edges" : [('a','s'),
                       ('s','b'),
                       ('x','y'),
@@ -35,9 +36,9 @@ class ProblemGenerator:
 
         "p1" : {
             "nodes":  ['a','s','x','y',
-                'b','c','e','f',
-                'd','g','h','t',
-                'i', 'j', 'z', 'k'],
+                       'b','c','e','f',
+                       'd','g','h','t',
+                       'i','j','z','k'],
 
             "edges" : [('a','s'),
                       ('s','b'),

@@ -148,6 +148,24 @@ def color(o,r,graph,node,target,start):
         return 'w'
 
 
+def create_state(o, r):
+
+    o.sort()
+    return '-'.join(o) + ' ___ R = ' + r
+
+#__________________________________________________________________________________
+
+def fitness_fun_heap(graph, obstacles, robot, target, num_of_moves):
+    shortest = nx.shortest_path(graph,robot,target)
+    score = -len(shortest) - num_of_moves
+
+    for obstacle in obstacles:
+        if obstacle in shortest:
+            score = score - 1
+
+    return -score
+
+
 
 def solve_heap(o,r,graph,t):
     round = 0
@@ -159,7 +177,7 @@ def solve_heap(o,r,graph,t):
         st = ('#'.join(obstacles),robot)
         if ( st not in visited ):
             visited.add(st)
-            score = fitness_fun(graph,obstacles,robot,t,len(moves))
+            score = fitness_fun_heap(graph,obstacles,robot,t,len(moves))
             pm = possible_moves(obstacles,robot,graph)
 
             for move in pm:
@@ -175,7 +193,14 @@ def solve_heap(o,r,graph,t):
                     print ("Visited = " + str(len(visited)))
                 heap.heappush(queue,(score,new_moves,newobstacles,newrobot))
 
+
+
+
+
 def solve_brute_force(o,r,graph,t):
+    num_of_solutions = 0
+    all_solutions = []
+
     round = 0
     visited = set([])
     queue = [([],o,r)]
@@ -192,37 +217,42 @@ def solve_brute_force(o,r,graph,t):
                 new_moves.append(move)
                 newobstacles,newrobot = make_moves(obstacles,robot,graph,[move])
                 if t == newrobot:
-                    print("f!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    return new_moves
+                    #print("FOUND SOLUTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    all_solutions.append(new_moves)
+                    #return new_moves
+
                 round = round+1
+
                 if (round % 100000 == 0):
                     print ("Visited = " + str(len(visited)))
                 queue.append((new_moves,newobstacles,newrobot))
 
 
-def create_state(o, r):
+    print('Number of solutions: ' + str(len(all_solutions)))
 
-    o.sort()
-    return '#'.join(o) + '__________' + r
+    min_len = float('inf')
+    best = all_solutions[0]
 
+    for i in range(len(all_solutions)):
+        if len(all_solutions[i]) < min_len:
+            min_len = len(all_solutions[i])
+            best = all_solutions[i]
+
+    return best
+
+'''
+____________ GENETIC ____________
+
+'''
 
 ELITE = 9
 MUTATION_RATE = 0.05
-CROSSOVER_RATE = 0.9
+CROSSOVER_RATE = 0.85
 MAX_GENERATION_NUMBER = 100
-TOURNAMENT_SIZE = 5
-REPRODCTION_SIZE = 10
-
-
-def fitness_fun(graph, obstacles, robot, target, num_of_moves):
-    shortest = nx.shortest_path(graph,robot,target)
-    score = -len(shortest) - num_of_moves
-
-    for obstacle in obstacles:
-        if obstacle in shortest:
-            score = score - 1
-
-    return -score
+TOURNAMENT_SIZE = 7
+REPRODUCTION_SIZE = 200
+CHROMOSOME_LEN = 100
+GENERATION_SIZE = 100
 
 
 def tournament_selection(chromosomes, graph, target):
@@ -252,165 +282,198 @@ def tournament_selection(chromosomes, graph, target):
 def selection(chromosomes, graph, target):
 
     selected = []
-    print('len: ' + str(len(chromosomes)))
-    for i in range(REPRODCTION_SIZE):
-        winner, score = tournament_selection(chromosomes, graph, target)
-        selected.append(winner)
 
     return selected
 
 
 def crossover(parent1, parent2, o, r, graph):
 
-    o1, r1, moves1, state_set1 = parent1
-    o2, r2, moves2, state_set2 = parent2
-
-    break_point = random.randrange(1, len(moves1))
-    child1_moves = []
-    child2_moves = []
-
-    new_o = o[:]
-    new_r = r
-
-    child1_state_set = set()
-    child2_state_set = set()
-
-    initial_state = create_state(new_o, new_r)
-
-    child1_state_set.add(initial_state)
-    child2_state_set.add(initial_state)
-
-    for i in range(0, break_point):
-
-        new_o, new_r = make_move(new_o, new_r, graph, moves1[i][0], moves1[i][1])
-        new_state = create_state(new_o, new_r)
-        if new_state not in child1_state_set:
-            child1_state_set.add(new_state)
-            child1_moves.append(moves1[i])
-
-    pm = possible_moves(new_o, new_r, graph)
-
-    for i in range(break_point, len(moves2)):
-        if moves2[i] in pm:
-            new_o, new_r = make_move(new_o, new_r, graph, moves2[i][0], moves2[i][1])
-            new_state = create_state(new_o, new_r)
-            if new_state not in child1_state_set:
-                child1_state_set.add(new_state)
-                child1_moves.append(moves2[i])
-                pm = possible_moves(new_o, new_r, graph)
-
-
-    child1 = (new_o, new_r, child1_moves, child1_state_set)
-
-    return child1
+    return
 
 
 def mutation(moves):
     return
 
-def create_generation(selected, graph, t):
+def create_new_generation(selected, graph, t):
 
-    chromosomes = []
+    return chromosomes
 
-    for s in selected:
-        o, r, moves, state_set = s
 
-        pm = possible_moves(o, r, graph)
 
-        for move in pm:
+def score(gene, t, graph):
 
+    ((o, robot, state, moves), weight) = gene
+
+
+    shortest = nx.shortest_path(graph, robot, t)
+    score =  -len(shortest) - weight
+
+    if robot == t:
+        score += 10000 - weight
+
+    for obstacle in o:
+        if obstacle in shortest:
+            score = score - 1
+
+    return score
+
+
+def print_solution(chromosome, t):
+
+    for c in chromosome:
+        if c[1][1] == t:
+            print('solution score: ' + str(c[0]))
+            print('solution obs: ' + str(c[1][0]))
+            print('solution robot: ' + str(c[1][1]))
+            print('solution state: ' + str(c[1][2]))
+            print('solution moves: ' + str(c[1][3]))
+            print('solution weight: ' + str(c[2]))
+
+
+def num_of_solutions_in_chromosome(chromosome, t):
+
+    tnum = 0
+
+    for c in chromosome:
+        if c[1][1] == t:
+            tnum += 1
+
+    print('broj resenja: ' + str(tnum))
+    return tnum
+
+
+def print_chr(chromosome, t):
+    i = 0
+    tnum = 0
+
+    for c in chromosome:
+
+        i += 1
+        print(str(i) + 'th: ')
+        print('score: ' + str(c[0]))
+        print('obs: ' + str(c[1][0]))
+        print('robot: ' + str(c[1][1]))
+        print('state: ' + str(c[1][2]))
+        print('moves: ' + str(c[1][3]))
+        print('weight: ' + str(c[2]))
+
+
+def create_chromosome(o, r, graph, t):
+
+    n = len(o) + 1
+    state = create_state(o, r)
+    states = [state]
+
+    moves = []
+    obstacles = o[:]
+    robot = r
+    weight = 0
+
+    g = ((obstacles, robot, states, moves), weight)
+    fitness = score(g, t, graph)
+
+    gene = (fitness, (obstacles, robot, states, moves), weight)
+
+    chromosome = [gene]
+
+    while len(chromosome) != CHROMOSOME_LEN:
+
+        pm = possible_moves(obstacles, robot, graph)
+
+        random_move =  random.choice(pm)
+        random_m = random_move[3][:2]
+
+        if len(moves) > 0:
+            last_move = moves[-1][3][:2]
+            last_move.reverse
+
+        else:
+            last_move = '#'
+
+
+        if random_m != last_move or len(moves) == 0:
+            #print(last_move)
+            new_o, new_r = make_move(obstacles, robot, graph, random_move[0], random_move[1])
+            new_state = create_state(new_o, new_r)
             new_moves = moves[:]
-            new_state_set =  copy.copy(state_set)
-            new_obstacles, new_robot = make_move(o, r, graph, move[0], move[1])
+            new_states = states[:]
+            new_states.append(new_state)
+            new_moves.append(random_move)
+            new_weight = weight + random_move[2]
 
-            new_state = create_state(new_obstacles, new_robot)
-            if new_state not in new_state_set:
+            new_fitness = score(((new_o, new_r, new_states, new_moves), weight), t, graph)
 
-                new_moves.append(move)
-                new_state_set.add(new_state)
+            chromosome.append((new_fitness, (new_o, new_r, new_states, new_moves), new_weight))
 
-                new_c = (new_obstacles, new_robot, new_moves, new_state_set)
+            moves = new_moves[:]
+            obstacles = new_o[:]
+            robot = new_r
+            weight = new_weight
+            states = new_states[:]
 
-                chromosomes.append(new_c)
+    return chromosome
 
-    return chromosomes
+'''
+    tn = print_chr(chromosome, t)
 
-def initial_population(chromosome, graph, t):
+    print('\n\nNASAO ' + str(tn) + ' RESENJA')
 
-    chromosomes = []
+    if tn > 0:
+        print_solution(chromosome, t)
+        return
+'''
 
-    (o, r, moves, state_set) = chromosome
+def initial_population(o, r, graph, t):
 
-    pm = possible_moves(o, r, graph)
+    init_population = []
 
-    for move in pm:
-        new_moves = moves[:]
-        new_state_set =  copy.copy(state_set)
-        new_obstacles, new_robot = make_move(o, r, graph, move[0], move[1])
-        new_moves.append(move)
+    for i in range(GENERATION_SIZE):
+        init_population.append(create_chromosome(o[:], r, graph, t))
 
-        new_state = create_state(new_obstacles, new_robot)
-        new_state_set.add(new_state)
+    return init_population
 
-        new_c = (new_obstacles, new_robot, new_moves, new_state_set)
 
-        chromosomes.append(new_c)
+def fitness_fun(chromosome):
 
-    return chromosomes
+    fitness = 0
+
+    for c in chromosome:
+        if num_of_solutions_in_chromosome(c) == 0:
+
+            bad_chromosome = copy.copy(c)
+
+
+
 
 def solve_genetic(o, r, graph, t):
 
-    generations_number = 0
-    state_set = set()
+    population = initial_population(o, r, graph, t)
 
-    state = create_state(o, r)
+    for i in range(MAX_GENERATION_NUMBER):
 
-    state_set.add(state)
-    chromosome = (o[:], r, [], state_set)
+#        selected = selection(population)
 
-    initial = initial_population(chromosome, graph, t)
+#        population = create_new_generation()
+#
 
-    solved = False
-    while generations_number < 60 or solved == True:
-        if generations_number == 0:
-            selected = selection(initial, graph, t)
-        else:
-            selected = selection(population, graph, t)
+#        global_best_chromosome =
 
-        population = create_generation(selected, graph, t)
-
-        for p in population:
-            obs, rob, moves, state_set = p
-            if rob == t:
-                solved = True
-                print('kRA')
-                print(p)
-                return
+    for chromosome in population:
+        nm = num_of_solutions_in_chromosome(chromosome, t)
 
 
-        generations_number += 1
+    return 1
 
 
-    print('parent1:')
-    print(population[0])
-
-    print('\n\nparent2: ')
-    print(population[1])
-
-    print('\nchild:')
-    print(crossover(population[0], population[1], o, r, graph))
-    print(generations_number)
 
 
+'''
 #    print('\n\n')
 #    print('WINNER : ' + str(tournament_selection(initial, graph, t)))
-
-    selected_chromosomes = selection(initial, graph, t)
 #    print('\n\nSELECTED FROM SELECTION:')
 #    for selected in selected_chromosomes:
 #        print(selected)
 
-    new_generation = create_generation(selected_chromosomes, graph, t)
 #    print('NEW GENERATION: ')
 #    for c in new_generation:
 
@@ -419,9 +482,7 @@ def solve_genetic(o, r, graph, t):
 #    print('NEW generation size: ' + str(len(new_generation)))
 
 
-    return 1
 
-'''
     for chromosome in population:
         score = fitness_fun(graph, o, r, t, len(chromosome))
 
