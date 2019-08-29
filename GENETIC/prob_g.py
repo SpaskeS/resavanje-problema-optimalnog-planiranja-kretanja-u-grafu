@@ -5,6 +5,19 @@ class ProblemGenerator:
     def __init__(self):
         self.testproblems  = {
 
+        "p5" : {
+            "nodes": ['s', 'a', 'b', 'c', 't'],
+
+            "edges": [('s', 'a'), ('a', 'b'), ('b', 'c'), ('c', 't')],
+
+            "obstacles" : ['b','c'],
+
+            "start" : 's',
+
+            "target" : 't'
+
+        },
+
         "p0" : {
             "nodes":  ['a','s','x','y',
                        'b','c','e','f',

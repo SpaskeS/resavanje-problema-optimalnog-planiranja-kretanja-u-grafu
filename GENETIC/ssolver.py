@@ -252,7 +252,7 @@ MAX_GENERATION_NUMBER = 100
 TOURNAMENT_SIZE = 7
 REPRODUCTION_SIZE = 200
 CHROMOSOME_LEN = 100
-GENERATION_SIZE = 100
+GENERATION_SIZE = 1000
 
 
 def tournament_selection(chromosomes, graph, target):
@@ -338,22 +338,21 @@ def num_of_solutions_in_chromosome(chromosome, t):
         if c[1][1] == t:
             tnum += 1
 
-    print('broj resenja: ' + str(tnum))
+    #print('broj resenja: ' + str(tnum))
     return tnum
 
 
 def print_chr(chromosome, t):
     i = 0
-    tnum = 0
 
     for c in chromosome:
 
         i += 1
         print(str(i) + 'th: ')
         print('score: ' + str(c[0]))
-        print('obs: ' + str(c[1][0]))
+    #    print('obs: ' + str(c[1][0]))
         print('robot: ' + str(c[1][1]))
-        print('state: ' + str(c[1][2]))
+    #    print('state: ' + str(c[1][2]))
         print('moves: ' + str(c[1][3]))
         print('weight: ' + str(c[2]))
 
@@ -376,14 +375,18 @@ def create_chromosome(o, r, graph, t):
 
     chromosome = [gene]
 
+    solved = False
+
     while len(chromosome) != CHROMOSOME_LEN:
 
         pm = possible_moves(obstacles, robot, graph)
 
         random_move =  random.choice(pm)
+
         random_m = random_move[3][:2]
 
         if len(moves) > 0:
+
             last_move = moves[-1][3][:2]
             last_move.reverse
 
@@ -392,42 +395,61 @@ def create_chromosome(o, r, graph, t):
 
 
         if random_m != last_move or len(moves) == 0:
-            #print(last_move)
+            #print('USAO')
             new_o, new_r = make_move(obstacles, robot, graph, random_move[0], random_move[1])
+            #print('DODAJE POTEZ ' + str(random_move))
             new_state = create_state(new_o, new_r)
-            new_moves = moves[:]
-            new_states = states[:]
-            new_states.append(new_state)
-            new_moves.append(random_move)
-            new_weight = weight + random_move[2]
 
-            new_fitness = score(((new_o, new_r, new_states, new_moves), weight), t, graph)
+            if new_state not in states:
 
-            chromosome.append((new_fitness, (new_o, new_r, new_states, new_moves), new_weight))
+                new_moves = moves[:]
+                new_moves.append(random_move)
 
-            moves = new_moves[:]
-            obstacles = new_o[:]
-            robot = new_r
-            weight = new_weight
-            states = new_states[:]
+                new_states = states[:]
+                new_states.append(new_state)
+
+                new_weight = weight + random_move[2]
+
+                new_fitness = score(((new_o, new_r, new_states, new_moves), weight), t, graph)
+
+                chromosome.append((new_fitness, (new_o, new_r, new_states, new_moves), new_weight))
+
+                moves = new_moves[:]
+                obstacles = new_o[:]
+                robot = new_r
+                weight = new_weight
+                states = new_states[:]
+                state = new_state
+                states = new_states[:]
+
+                if new_r == t:
+                    
+                    print('RESIO')
+                    solved = True
+                    break
+
+            else:
+                #print('OSTAJE ISTO')
+                new_fitness = score(((obstacles, robot, states, moves), weight), t, graph)
+                chromosome.append((new_fitness, (obstacles, robot, states, moves), weight))
+
+
+    if solved:
+
+        while len(chromosome)  != CHROMOSOME_LEN:
+            chromosome.append((new_fitness, (obstacles, robot, states, moves), weight))
+
+
+
 
     return chromosome
 
-'''
-    tn = print_chr(chromosome, t)
-
-    print('\n\nNASAO ' + str(tn) + ' RESENJA')
-
-    if tn > 0:
-        print_solution(chromosome, t)
-        return
-'''
 
 def initial_population(o, r, graph, t):
 
     init_population = []
 
-    for i in range(GENERATION_SIZE):
+    for i in range(100):
         init_population.append(create_chromosome(o[:], r, graph, t))
 
     return init_population
@@ -449,18 +471,11 @@ def solve_genetic(o, r, graph, t):
 
     population = initial_population(o, r, graph, t)
 
-    for i in range(MAX_GENERATION_NUMBER):
-
-#        selected = selection(population)
-
-#        population = create_new_generation()
-#
-
-#        global_best_chromosome =
-
-    for chromosome in population:
-        nm = num_of_solutions_in_chromosome(chromosome, t)
-
+    for i in range(len(population)):
+        #print_chr(population[i], t)
+        num = num_of_solutions_in_chromosome(population[i], t)
+        print(num)
+        k  =1
 
     return 1
 
