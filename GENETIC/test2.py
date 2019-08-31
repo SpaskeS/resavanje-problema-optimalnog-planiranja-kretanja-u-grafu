@@ -50,9 +50,9 @@ elif alg == 'g':
 
     print('\n\n')
     #moves = ssolver.remove_jumps(moves)
-    print('GENETIC:')
-    print(moves)
-    print('SOLVED IN  ' + str(len(moves)) + ' MOVES')
+    #print('GENETIC:')
+    #print(moves)
+#    print('SOLVED IN  ' + str(len(moves)) + ' MOVES')
 
 
 
