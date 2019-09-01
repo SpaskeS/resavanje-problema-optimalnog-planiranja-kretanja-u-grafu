@@ -39,6 +39,7 @@ initial_population = []
 elite = 6
 
 for i in range(population_size):
+    random_path = ss
     initial_population.append(ssolver.create_random_path(problem.obstacles, problem.robot, problem.graph, problem.target, chromosome_size))
 
 new_pop = []
