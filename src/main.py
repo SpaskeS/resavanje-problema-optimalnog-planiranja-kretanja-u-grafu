@@ -6,13 +6,24 @@ import genetic
 import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
+import problem as prbl
+from prozor import Prozor
 
-test_instance =  'p4'
-problem = ProblemGenerator().getByName(test_instance)
 
-algorithm = 'b'
-#algorithm = 'h'
-#algorithm = 'g'
+
+# prozor = Prozor()
+# prozor.root.mainloop()
+# p = prozor.get_p()
+# problem = prbl.Problem(nodes=p["nodes"],
+#                     edges=p["edges"],
+#                     start=p["start"],
+#                     target=p["target"],
+#                     obstacles=p["obstacles"]
+# )
+#
+# algorithm = prozor.get_algoritam()
+algorithm = 'g'
+problem = ProblemGenerator().getByName('p7')
 
 path = nx.shortest_path(problem.graph, problem.robot, problem.target)
 

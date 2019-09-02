@@ -3,11 +3,11 @@ import util
 import networkx as nx
 import ssolver
 import random
+import copy
 import operator
 
-test_instance =  'p4'
+test_instance =  'p7'
 problem = ProblemGenerator().getByName(test_instance)
-
 
 def different_moves(move1, move2):
 
@@ -25,7 +25,7 @@ def different_moves(move1, move2):
 def create_random_path(o, r, graph, t, chromosome_len):
 
     moves = []
-    new_o = o[:]
+    new_o = copy.deepcopy(o)
     new_r = r
     visited = set()
 
@@ -62,7 +62,7 @@ def create_random_path(o, r, graph, t, chromosome_len):
 
             if new_visited not in visited:
 
-                new_moves = moves[:]
+                new_moves = copy.deepcopy(moves)
                 new_moves.append(random_move)
 
                 visited.add(new_visited)
@@ -82,22 +82,25 @@ def create_random_path(o, r, graph, t, chromosome_len):
                     no_more_states = True
                     break
 
-
+    return moves
+'''
     if solved:
-        while len(moves) < chromosome_len:
-            moves.append(('1', '1', 0, []))
+        return moves
+        #while len(moves) < chromosome_len:
+        #    moves.append(('1', '1', 0, []))
 
     if no_more_states:
-        while len(moves) < chromosome_len:
-            moves.append(('0', '0', 0, []))
+        return moves
+    #    while len(moves) < chromosome_len:
+    #        moves.append(('0', '0', 0, []))
+'''
 
-    return moves
 
 
 
 def create_initial_population(o, r, graph, t, chromosome_size, population_size):
 
-    obstacles = o[:]
+    obstacles = copy.deepcopy(o)
     robot = r
 
     initial_population = []
@@ -110,31 +113,49 @@ def create_initial_population(o, r, graph, t, chromosome_size, population_size):
 
 def fitness_fun(chromosome, o, r, graph, t, path):
 
+    last_robot = None
+    for i in range(1, len(chromosome)):
+        if chromosome[-i][1] == r:
+            last_robot = chromosome[-i][0]
+            break
+
     weight = 0
-    obstacles = o[:]
+    obstacles = copy.deepcopy(o)
 
     for i in range(len(chromosome)):
         weight += chromosome[i][2]
 
-    score = - weight * 1.5
+    score = - weight
 
     if r == t:
-        score += 100
+        score += 10000
 
     for node in path:
-        if r == node:
-            score += 10
+        if node == r:
+            distance = nx.shortest_path_length(graph, r, t)
+            score += 20*((len(path)-distance+1)/2)
 
     count_obs = 0
 
     for obstacle in obstacles:
         if obstacle in path:
             count_obs += 1
-            score = score - 20
+            score = score - 40*count_obs
+            if last_robot != None and nx.shortest_path_length(graph, r, t) > nx.shortest_path_length(graph, last_robot, t):
+                score += count_obs*40
 
     if ssolver.is_hole(o, r, t) and count_obs == 0:
-        score += 50
+        # for node in path:
+        distance = nx.shortest_path_length(graph, r, t)
+        score += 70*(len(path)-distance+1)
+        print('!!!!!!!!')
+        #     if r == node:
+        #         score += 1000
+        score += 5000
 
+
+    return score
+'''
     winner_move = ('1', '1', 0, [])
     loser_move = ('0', '0', 0, [])
 
@@ -148,15 +169,22 @@ def fitness_fun(chromosome, o, r, graph, t, path):
         if move == loser_move:
             score -= 50
             break
+'''
 
-    return score
 
 
 def fit_chromosome(chromosome_moves, o, r, graph, population_size, path, t):
 
-    obstacles = o[:]
+    obstacles = copy.deepcopy(o)
     robot = r
 
+    chromosome_o, chromosome_r = ssolver.make_moves(obstacles, robot, graph, chromosome_moves)
+
+    fitness = fitness_fun(chromosome_moves, chromosome_o, chromosome_r, graph, t, path)
+    scored_chromosome = ((fitness, chromosome_moves))
+
+    return scored_chromosome
+'''
     if ('1', '1', 0, []) in chromosome_moves:
         index_winner = chromosome_moves.index(('1', '1', 0, []))
         chromosome_o, chromosome_r = ssolver.make_moves(obstacles, robot, graph, chromosome_moves[:index_winner])
@@ -164,14 +192,9 @@ def fit_chromosome(chromosome_moves, o, r, graph, population_size, path, t):
     elif ('0', '0', 0, []) in chromosome_moves:
         index_loser = chromosome_moves.index(('0', '0', 0, []))
         chromosome_o, chromosome_r = ssolver.make_moves(obstacles, robot, graph, chromosome_moves[:index_loser])
+'''
 
-    else:
-        chromosome_o, chromosome_r = ssolver.make_moves(obstacles, robot, graph, chromosome_moves)
 
-    fitness = fitness_fun(chromosome_moves, chromosome_o, chromosome_r, graph, t, path)
-    scored_chromosome = ((fitness, chromosome_moves))
-
-    return scored_chromosome
 
 
 def tournament_selection(population, tournament_size):
@@ -195,100 +218,157 @@ def selection(population, reproduction_size, tournament_size):
 
 def create_new_generation(population, selected, population_size, elite_size, o, r, graph, t, path):
 
-    new_generation = sorted(population, key= lambda item:item[0], reverse=True)[:elite_size]
+    new_generation = sorted(population, key= lambda item:item[0], reverse=True)[:int(elite_size)]
 
     while len(new_generation) < population_size:
 
-        parent1, parent2 = random.sample(selected, 2)
-        child1, child2 = crossover(parent1, parent2, o, r, graph, t, population_size, path)
+        valid_parents = False
+        while(valid_parents == False):
+            parent1, parent2 = random.sample(selected, 2)
 
-        new_generation.append(child1)
-        new_generation.append(child2)
+            if len(parent1[1]) > 5 and len(parent2[1]) > 5:
+                child1 = crossover(parent1, parent2, o, r, graph, t, population_size, path)
+                valid_parents = True
+
+
+        if random.randrange(0, 100) < 3:
+
+            mutated_child = mutation(child1, o, r, graph, population_size, path, t)
+            new_generation.append(mutated_child)
+        else:
+            new_generation.append(child1)
 
     return new_generation
 
+
+def mutation(chromosome, o, r, graph, population_size, path, t):
+
+    moves = chromosome[1]
+    print(chromosome[1])
+    obstacles = copy.deepcopy(o)
+    robot = r
+    new_o, new_r = ssolver.make_moves(obstacles, robot, graph, moves)
+
+    pm = ssolver.possible_moves(new_o, new_r, graph)
+
+    for p in pm:
+        if different_moves(p, moves[-1]):
+            moves.append(p)
+            break
+
+    new_o, new_r = ssolver.make_moves(copy.deepcopy(o), r, graph, moves)
+
+    mutated = fit_chromosome(moves, copy.deepcopy(o), r, graph, population_size, path, t)
+
+    return mutated
 
 def crossover(parent1, parent2, o, r, graph, t, population_size, path):
 
     (score1, moves1) = parent1
     (score2, moves2) = parent2
 
-    obstacles = o[:]
+    obstacles = copy.deepcopy(o)
     robot = r
 
-    i = random.randrange(1, len(moves1))
-    k = i
+    if len(moves1) <= len(moves2):
 
-    new_moves = moves1[:i]
-
-    if ('1', '1', 0, []) in new_moves:
-        index_winner = new_moves.index(('1', '1', 0, []))
-        new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves[:index_winner])
-
-    elif ('0', '0', 0, []) in new_moves:
-        index_loser = new_moves.index(('0', '0', 0, []))
-        new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves[:index_loser])
+        i = random.randrange(1, len(moves1)-1)
+        new_moves =  moves1[:i]
 
     else:
-        new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves)
+
+        i = random.randrange(1, len(moves2)-1)
+        new_moves = moves2[:i]
+
+    new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves)
+
+    if len(moves1) <= len(moves2):
+        for j in range(i, len(moves2)):
+
+            if moves2[j] in ssolver.possible_moves(new_o, new_r, graph) and different_moves(moves2[j], new_moves[-1]):
+                new_moves.append(moves2[j])
+                new_o, new_r = ssolver.make_move(new_o, new_r, graph, moves2[j][0], moves2[j][1])
+                if new_r == t:
+                    break
+
+    else:
+        for j in range(0, len(moves1)):
+            if moves1[j] in ssolver.possible_moves(new_o, new_r, graph) and different_moves(moves1[j], new_moves[-1]):
+                new_moves.append(moves1[j])
+                new_o, new_r = ssolver.make_move(new_o, new_r, graph, moves1[j][0], moves1[j][1])
+                if new_r == t:
+                    break
 
 
-    for j in range(i, len(moves2)):
 
-        if moves2[j] in ssolver.possible_moves(new_o, new_r, graph) and moves2[j] != ('0', '0', 0, []) and moves2[j] != ('1', '1', 0, []) and different_moves(moves2[j], new_moves[-1]):
-            new_moves.append(moves2[j])
-            new_o, new_r = ssolver.make_move(new_o, new_r, graph, moves2[j][0], moves2[j][1])
-            if new_r == t:
-                break
+    child1 = fit_chromosome(new_moves, obstacles, robot, graph, population_size, path, t)
+    return child1
+
+'''    if len(moves1) <= len(moves2):
+
+        for j in range(i, len(moves2)):
+
+            if moves2[j] in ssolver.possible_moves(new_o, new_r, graph) and different_moves(moves2[j], new_moves[-1]):
+                new_moves.append(moves2[j])
+                new_o, new_r = ssolver.make_move(new_o, new_r, graph, moves2[j][0], moves2[j][1])
+                if new_r == t:
+                    break
+
+    elif len(moves1) > len(moves2):
+        for j in range(0, len(moves2)):
+            if moves2[j] in ssolver.possible_moves(new_o, new_r, graph) and different_moves(moves2[j], new_moves[-1]):
+                new_moves.append(moves2[j])
+                new_o, new_r = ssolver.make_move(new_o, new_r, graph, moves2[j][0], moves2[j][1])'''
+
+    # TODO mozda nw trbea newo i ewr
 
 
+'''    new_moves_2 = moves2[:k]
+# !!!!
+
+    new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2)
+
+
+    if len(moves2) <= len(moves1):
+        for j in range(k, len(moves1)):
+            if moves1[j] in ssolver.possible_moves(new_o_2, new_r_2, graph) and different_moves(moves1[j], new_moves_2[-1]):
+
+                new_moves_2.append(moves1[j])
+                new_o_2, new_r_2 = ssolver.make_move(new_o_2, new_r_2, graph, moves1[j][0], moves1[j][1])
+
+                if new_r_2 == t:
+                    break
+    else:
+        for j in range(0, len(moves1)):
+            if moves1[j] in ssolver.possible_moves(new_o_2, new_r_2, graph) and different_moves(moves1[j], new_moves_2[-1]):
+                new_moves.append(moves1[j])
+                new_o_2, new_r_2 = ssolver.make_move(new_o_2, new_r_2, graph, moves1[j][0], moves1[j][1])
+
+    child2 = fit_chromosome(new_moves_2, obstacles, robot, graph, population_size, path, t)
+
+    return child1, child2'''
+
+
+'''
     if new_r != t:
-        while len(new_moves) < len(moves1):
+    #    while len(new_moves) < len(moves1):
 
-            appended, app_o, app_r = random_move(new_moves, new_o, new_r, graph, t)
-            if appended == [] and app_o == [] and app_r == '':
-                child1 = parent1
-                break
-            new_moves.append(appended)
-            new_o = app_o[:]
-            new_r = app_r
+    #        appended, app_o, app_r = random_move(new_moves, new_o, new_r, graph, t)
+    #        if appended == [] and app_o == [] and app_r == '':
+    #            child1 = parent1
+    #            break
+    #        new_moves.append(appended)
+    #        new_o = app_o[:]
+    #        new_r = app_r
 
 
     else:
         while len(new_moves) < len(moves1):
 
             new_moves.append(('1', '1', 0, []))
+'''
 
-
-    # TODO mozda nw trbea newo i ewr
-    child1 = fit_chromosome(new_moves, o, r, graph, population_size, path, t)
-
-
-    new_moves_2 = moves2[:k]
-
-    if ('1', '1', 0, []) in new_moves_2:
-        index_winner = new_moves_2.index(('1', '1', 0, []))
-        new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2[:index_winner])
-
-    elif ('0', '0', 0, []) in new_moves_2:
-        index_loser = new_moves_2.index(('0', '0', 0, []))
-        new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2[:index_loser])
-
-    else:
-        new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2)
-
-
-    for j in range(k, len(moves2)):
-
-        if moves1[j] in ssolver.possible_moves(new_o_2, new_r_2, graph) and moves1[j] != ('0', '0', 0, []) and moves1[j] != ('1', '1', 0, []) and different_moves(moves1[j], new_moves_2[-1]):
-
-            new_moves_2.append(moves1[j])
-            new_o_2, new_r_2 = ssolver.make_move(new_o_2, new_r_2, graph, moves1[j][0], moves1[j][1])
-
-            if new_r_2 == t:
-                break
-
-
+'''
     if new_r_2 != t:
         while len(new_moves_2) < len(moves1):
 
@@ -306,17 +386,34 @@ def crossover(parent1, parent2, o, r, graph, t, population_size, path):
     else:
         while len(new_moves_2) < len(moves1):
             new_moves_2.append(('1', '1', 0, []))
+'''
 
-    child2 = fit_chromosome(new_moves_2, o, r, graph, population_size, path, t)
+'''
+    if ('1', '1', 0, []) in new_moves_2:
+        index_winner = new_moves_2.index(('1', '1', 0, []))
+        new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2[:index_winner])
 
-    return child1, child2
+    elif ('0', '0', 0, []) in new_moves_2:
+        index_loser = new_moves_2.index(('0', '0', 0, []))
+        new_o_2, new_r_2 = ssolver.make_moves(obstacles, robot, graph, new_moves_2[:index_loser])
+'''
+
+'''
+    if ('1', '1', 0, []) in new_moves:
+        index_winner = new_moves.index(('1', '1', 0, []))
+        new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves[:index_winner])
+
+    elif ('0', '0', 0, []) in new_moves:
+        index_loser = new_moves.index(('0', '0', 0, []))
+        new_o, new_r = ssolver.make_moves(obstacles, robot, graph, new_moves[:index_loser])
+'''
 
 def random_move(current_moves, o, r, graph, t):
 
     initial_obs = problem.obstacles[:]
     initial_r = problem.robot
 
-    moves = current_moves[:]
+    moves = copy.deepcopy(current_moves)
     obstacles = o[:]
     robot = r
 
@@ -382,10 +479,10 @@ def solve_genetic(o, r, graph, t, path):
             obstacles_in_path += 1
 
     chromosome_size = len(path) * obstacles_in_path
-    population_size = 50
-    elite_size = population_size / 3
+    population_size = 200
+    elite_size = population_size / 4
     max_iterations = 100
-    reproduction_size = 10
+    reproduction_size = 50
     tournament_size = 5
 
     initial_population = create_initial_population(o, r, graph,
@@ -397,26 +494,18 @@ def solve_genetic(o, r, graph, t, path):
         chromosome = initial_population[i]
         scored_population.append(fit_chromosome(chromosome, o, r, graph, population_size, path, t))
 
-    current_pop = scored_population[:]
+    current_pop = copy.deepcopy(scored_population)
 
     for i in range(max_iterations):
         selected = selection(current_pop, reproduction_size, tournament_size)
         current_pop = create_new_generation(current_pop, selected, population_size, elite_size,
                                             o, r, graph, t, path)
 
+        print(current_pop[0])
         best = max(current_pop, key=lambda item:item[0])
-        if best[0] > 140:
-            print('ITERACIJA ' + str(i))
-            break
+        print(str(i) + ' : ' + str(best))
 
 
     print('BEST ' + str(best))
 
-    if best[0] < 50:
-        print('IPAK BRUTE')
-        return ssolver.solve_brute_force(o, r, graph, t)
-
-    else:
-        print(best[1])
-        res = best[1].index(('1', '1', 0, []))
-        return best[1][:res]
+    return best[1]

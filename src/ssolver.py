@@ -36,7 +36,9 @@ def find_nearest_hole(o,r,graph, start):
 
         if node not in visited:
             visited.append(node)
+            
             adjacent = graph.adj[node]
+
             for neighbor in adjacent:
                 if neighbor in o:
                     if neighbor not in visited:
@@ -233,7 +235,7 @@ def solve_brute_force(o,r,graph,t):
 
 
     print('Number of solutions: ' + str(len(all_solutions)))
-    
+
     best = min(all_solutions, key = lambda x : len(x))
 
     return best
