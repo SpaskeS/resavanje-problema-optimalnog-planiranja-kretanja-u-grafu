@@ -5,7 +5,7 @@ import ssolver
 import random
 import operator
 
-test_instance =  'p6'
+test_instance =  'p4'
 problem = ProblemGenerator().getByName(test_instance)
 
 
@@ -210,8 +210,6 @@ def create_new_generation(population, selected, population_size, elite_size, o, 
 
 def crossover(parent1, parent2, o, r, graph, t, population_size, path):
 
-
-
     (score1, moves1) = parent1
     (score2, moves2) = parent2
 
@@ -384,11 +382,11 @@ def solve_genetic(o, r, graph, t, path):
             obstacles_in_path += 1
 
     chromosome_size = len(path) * obstacles_in_path
-    population_size = 100
+    population_size = 50
     elite_size = population_size / 3
     max_iterations = 100
-    reproduction_size = 40
-    tournament_size = 10
+    reproduction_size = 10
+    tournament_size = 5
 
     initial_population = create_initial_population(o, r, graph,
                                                    t, chromosome_size, population_size)

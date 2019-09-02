@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
 
-test_instance =  'p6'
+test_instance =  'p4'
 problem = ProblemGenerator().getByName(test_instance)
 
-#algorithm = 'b'
+algorithm = 'b'
 #algorithm = 'h'
-algorithm = 'g'
+#algorithm = 'g'
 
 path = nx.shortest_path(problem.graph, problem.robot, problem.target)
 
