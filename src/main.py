@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
 import problem as prbl
-#from prozor import Prozor
+from prozor import Prozor
 
 # prozor = Prozor()
 # prozor.root.mainloop()
@@ -21,7 +21,7 @@ import problem as prbl
 # algorithm = prozor.get_algoritam()
 
 algorithm = 'g'
-problem = ProblemGenerator().getByName('p7')
+problem = ProblemGenerator().getByName('p9')
 
 path = nx.shortest_path(problem.graph, problem.robot, problem.target)
 s = time.time()

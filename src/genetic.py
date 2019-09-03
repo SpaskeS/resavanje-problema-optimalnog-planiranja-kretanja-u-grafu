@@ -6,7 +6,7 @@ import random
 import copy
 import operator
 
-test_instance =  'p7'
+test_instance =  'p9'
 problem = ProblemGenerator().getByName(test_instance)
 
 def different_moves(move1, move2):
@@ -321,8 +321,6 @@ def solve_genetic(o, r, graph, t, path):
         best = max(current_pop, key=lambda item:item[0])
 
         print(str(i) + ' : ' + str(best))
-        if best[0] > 9999:
-            break
 
     print('BEST ' + str(best))
 

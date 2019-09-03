@@ -5,6 +5,22 @@ class ProblemGenerator:
     def __init__(self):
         self.testproblems  = {
 
+        "p9": {
+            "nodes": ['s', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 't'],
+            "edges": [('a', 'b'), ('a', 'c'), ('b', 'd'), ('b', 'e'), ('c', 'f'), ('c', 'g'), ('f', 'k'), ('f', 'l'), ('g', 'm'), ('g', 't'), ('d', 'h'), ('d', 'i'), ('e', 's'), ('e', 'j')],
+            "obstacles":['a', 'b', 'c', 'e', 'g'],
+            "start":'s',
+            "target":'t'
+        },
+
+        "p8": {
+            "nodes": ['s', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 't'],
+            "edges": [('a', 's'), ('s', 'c'), ('t', 'd'), ('d', 'b'), ('c', 'b'), ('c', 'e'), ('c', 'f'), ('c', 'g'), ('f', 'i'), ('g', 'h')],
+            "obstacles":['c', 'b', 'd', 't'],
+            "start":'s',
+            "target":'t'
+        },
+
         "p7": {
             "nodes": ['s', 'a', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 't', 'b'],
             "edges": [('a','s'), ('s','b'), ('s','c'), ('c','f'), ('b','d'), ('b','e'), ('e','g'), ('g','h'), ('e','i'), ('i','j'), ('j','t')],
