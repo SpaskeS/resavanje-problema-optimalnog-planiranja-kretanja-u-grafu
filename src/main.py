@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import time
 import problem as prbl
-from prozor import Prozor
+#from prozor import Prozor
 
 # prozor = Prozor()
 # prozor.root.mainloop()

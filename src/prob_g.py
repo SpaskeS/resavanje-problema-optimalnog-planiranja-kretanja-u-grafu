@@ -6,8 +6,8 @@ class ProblemGenerator:
         self.testproblems  = {
 
         "p7": {
-            "nodes": ['s', 'a', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 't', 'b'],
-            "edges": [('a','s'), ('s','b'), ('s','c'), ('c','f'), ('b','d'), ('b','e'), ('e','g'), ('g','h'), ('e','i'), ('i','j'), ('j','t')],
+            "nodes": ['k','s', 'a', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 't', 'b'],
+            "edges": [('t', 'k'), ('a','s'), ('s','b'), ('s','c'), ('c','f'), ('b','d'), ('b','e'), ('e','g'), ('g','h'), ('e','i'), ('i','j'), ('j','t')],
             "obstacles": ['b', 'd', 'e', 'g', 't'],
             "start": 's',
             "target": 't'
