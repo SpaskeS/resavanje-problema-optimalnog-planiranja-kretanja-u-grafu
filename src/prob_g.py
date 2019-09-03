@@ -8,7 +8,7 @@ class ProblemGenerator:
         "p9": {
             "nodes": ['s', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 't'],
             "edges": [('a', 'b'), ('a', 'c'), ('b', 'd'), ('b', 'e'), ('c', 'f'), ('c', 'g'), ('f', 'k'), ('f', 'l'), ('g', 'm'), ('g', 't'), ('d', 'h'), ('d', 'i'), ('e', 's'), ('e', 'j')],
-            "obstacles":['a', 'b', 'c', 'e', 'g'],
+            "obstacles":['a', 'b', 'c', 'e', 'g', 'd', 'f'],
             "start":'s',
             "target":'t'
         },

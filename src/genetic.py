@@ -5,9 +5,13 @@ import ssolver
 import random
 import copy
 import operator
+import math
 
-test_instance =  'p9'
-problem = ProblemGenerator().getByName(test_instance)
+POPULATION_SIZE = 1000
+ELITE_SIZE = 1
+MAX_ITER = 20
+REPRODUCTION_SIZE = 400
+TOURNAMENT_SIZE = 20
 
 def different_moves(move1, move2):
 
@@ -99,18 +103,14 @@ def create_initial_population(o, r, graph, t, chromosome_size, population_size):
 
 def fitness_fun(chromosome, o, r, graph, t, path):
 
-    last_robot = None
-    for i in range(1, len(chromosome)):
-        if chromosome[-i][1] == r:
-            last_robot = chromosome[-i][0]
-            break
-
-    if last_robot == t:
-        score += 1000
+    FINISH = 10000
+    ON_PATH_AWARD = 10
+    OBSTACLE_ON_PATH_PENALTY = 40
+    OBSTACLE_CLOSE_TO_TARGET_PENTALY = 5
+    FREE_PATH_AWARD = 1000
 
     weight = 0
     obstacles = copy.copy(o)
-
 
     for i in range(len(chromosome)):
         weight += chromosome[i][2]
@@ -118,7 +118,7 @@ def fitness_fun(chromosome, o, r, graph, t, path):
     score = - weight
 
     if r == t:
-        score += 10000
+        score += FINISH
 
     for node in path:
         if node == r:
@@ -126,7 +126,7 @@ def fitness_fun(chromosome, o, r, graph, t, path):
             for obstacle in obstacles:
                 if obstacle in path:
                     distance-=1
-            score += 10*((len(path)-distance+1))
+            score += ON_PATH_AWARD*((len(path)-distance+1))
 
     count_obs = 0
 
@@ -134,15 +134,16 @@ def fitness_fun(chromosome, o, r, graph, t, path):
         if obstacle in path:
             count_obs += 1
             obs_distance = nx.shortest_path_length(graph, obstacle, t)
-            score = score - 40*count_obs - 5*(len(path)-obs_distance+1)
+            score = score - OBSTACLE_ON_PATH_PENALTY*count_obs - OBSTACLE_CLOSE_TO_TARGET_PENTALY*(len(path)-obs_distance+1)
+
 
     if ssolver.is_hole(obstacles, r, t) and count_obs == 0:
         for i in range(0, len(path)-1):
             for move in chromosome:
                 if move == (path[i], path[i+1]) and move[0] == r:
-                    score+=1000
+                    score+=FREE_PATH_AWARD
         distance = nx.shortest_path_length(graph, r, t)
-        score += 1000*(len(path)-distance+1)
+        score += FREE_PATH_AWARD*(len(path)-distance+1)
 
     return score
 
@@ -286,11 +287,11 @@ def solve_genetic(o, r, graph, t, path):
 
     chromosome_size = len(path) * obstacles_in_path
 
-    population_size = 100
-    elite_size = 60
-    max_iterations = 200
-    reproduction_size = 30
-    tournament_size = 10
+    population_size = POPULATION_SIZE
+    elite_size = ELITE_SIZE
+    max_iterations = MAX_ITER
+    reproduction_size = REPRODUCTION_SIZE
+    tournament_size = TOURNAMENT_SIZE
 
     initial_population = create_initial_population(o, r, graph,
                                                    t, chromosome_size, population_size)
@@ -302,6 +303,9 @@ def solve_genetic(o, r, graph, t, path):
         scored_population.append(fit_chromosome(chromosome, o, r, graph, population_size, path, t))
 
     current_pop = copy.copy(scored_population)
+
+    current_best = -float('inf')
+    best_iter = 0
 
     for i in range(max_iterations):
 
@@ -320,8 +324,13 @@ def solve_genetic(o, r, graph, t, path):
 
         best = max(current_pop, key=lambda item:item[0])
 
+        if current_best < best[0]:
+            current_best = best[0]
+            best_iter = i
+
         print(str(i) + ' : ' + str(best))
 
     print('BEST ' + str(best))
+    print('Generacija ' + str(best_iter))
 
     return best[1]
