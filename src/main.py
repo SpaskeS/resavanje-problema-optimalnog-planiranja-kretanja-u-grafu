@@ -9,8 +9,6 @@ import time
 import problem as prbl
 from prozor import Prozor
 
-
-
 # prozor = Prozor()
 # prozor.root.mainloop()
 # p = prozor.get_p()
@@ -20,8 +18,8 @@ from prozor import Prozor
 #                     target=p["target"],
 #                     obstacles=p["obstacles"]
 # )
-#
 # algorithm = prozor.get_algoritam()
+
 algorithm = 'g'
 problem = ProblemGenerator().getByName('p7')
 
@@ -117,5 +115,6 @@ def animate(i):
 fig, ax = plt.subplots(figsize=(6,4))
 ani = animation.FuncAnimation(fig, animate, frames=len(moves)+1, init_func=init,
                               interval=1000, repeat=False)
-
+mng = plt.get_current_fig_manager()
+mng.full_screen_toggle()
 util.plt_show()

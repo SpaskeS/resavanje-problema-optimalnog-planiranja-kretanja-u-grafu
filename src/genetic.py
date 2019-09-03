@@ -133,44 +133,43 @@ def fitness_fun(chromosome, o, r, graph, t, path):
     for node in path:
         if node == r:
             distance = nx.shortest_path_length(graph, r, t)
-            score += 20*((len(path)-distance+1)/2)
+            for obstacle in obstacles:
+                if obstacle in path:
+                    distance-=1
+            score += 10*((len(path)-distance+1))
 
     count_obs = 0
 
     for obstacle in obstacles:
+
         if obstacle in path:
             count_obs += 1
-            score = score - 40*count_obs
-            if last_robot != None and nx.shortest_path_length(graph, r, t) > nx.shortest_path_length(graph, last_robot, t):
-                score += count_obs*40
+            obs_distance = nx.shortest_path_length(graph, obstacle, t)
+            score = score - 40*count_obs - 5*(len(path)-obs_distance+1)
+            # if last_robot != None and nx.shortest_path_length(graph, r, t) > nx.shortest_path_length(graph, last_robot, t):
+            #     score += count_obs*40
 
-    if ssolver.is_hole(o, r, t) and count_obs == 0:
-        # for node in path:
-        distance = nx.shortest_path_length(graph, r, t)
-        score += 70*(len(path)-distance+1)
-        print('!!!!!!!!')
-        #     if r == node:
-        #         score += 1000
+    if ssolver.is_hole(obstacles, r, t) and count_obs == 0:
+        # distance = nx.shortest_path_length(graph, r, t)
+        # score += 70*(len(path)-distance+1)
         score += 5000
 
 
     return score
-'''
-    winner_move = ('1', '1', 0, [])
-    loser_move = ('0', '0', 0, [])
 
-    counter_res = chromosome.count(winner_move)
-
-    for move in chromosome:
-        if move == winner_move:
-            score += 10
-            break
-
-        if move == loser_move:
-            score -= 50
-            break
-'''
-
+#     winner_move = ('1', '1', 0, [])
+#     loser_move = ('0', '0', 0, [])
+#
+#     counter_res = chromosome.count(winner_move)
+#
+#     for move in chromosome:
+#         if move == winner_move:
+#             score += 10
+#             break
+#
+#         if move == loser_move:
+#             score -= 50
+#             break
 
 
 def fit_chromosome(chromosome_moves, o, r, graph, population_size, path, t):
@@ -479,10 +478,10 @@ def solve_genetic(o, r, graph, t, path):
             obstacles_in_path += 1
 
     chromosome_size = len(path) * obstacles_in_path
-    population_size = 200
-    elite_size = population_size / 4
-    max_iterations = 100
-    reproduction_size = 50
+    population_size = 100
+    elite_size = population_size / 5
+    max_iterations = 50
+    reproduction_size = 20
     tournament_size = 5
 
     initial_population = create_initial_population(o, r, graph,

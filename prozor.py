@@ -3,7 +3,6 @@ import tkinter.messagebox
 
 class Prozor:
     def __init__(self):
-        print('idemo delije')
         self.root = Tk()
         self.root.attributes("-fullscreen", True)
 
@@ -23,11 +22,12 @@ class Prozor:
         self.kraj = None
         self.postoji_kraj=False
         self.p = {}
+        self.algoritam = None
 
     def napravi_elemente(self):
-        self.button_alg_1 = Button(self.root, text='Algoritam 1', command=self.start_alg_1, width=30)
-        self.button_alg_2 = Button(self.root, text='Algoritam 2', command=self.start_alg_2, width=30)
-        self.button_alg_3 = Button(self.root, text='Algoritam 2', command=self.start_alg_3, width=30)
+        self.button_alg_1 = Button(self.root, text='Algoritam grube sile', command=self.start_alg_1, width=30)
+        self.button_alg_2 = Button(self.root, text='Pohlepni algoritam', command=self.start_alg_2, width=30)
+        self.button_alg_3 = Button(self.root, text='Genetski algoritam', command=self.start_alg_3, width=30)
         self.button_pocetak = Button(self.root, text='Početak', command=self.pocetak, width=30)
         self.button_kraj = Button(self.root, text='Kraj', command=self.kraj, width=30)
         self.button_dodaj_cvor = Button(self.root, text='Dodaj čvor', command=self.dodaj_cvor, width=30)
@@ -39,7 +39,6 @@ class Prozor:
         self.button_dodaj_prepreku = Button(self.root, text='Dodaj prepreku', command = self.dodaj_prepreku, width=30)
         self.canvas = Canvas(self.root, width = 800, height = 700, bg='white')
 
-        # TODO: Staviti da elementi budu responsive u odnosu na velicinu prozora
 
     def konfigurisi_elemente(self):
         self.button_alg_1.grid(column=0, row = 0)
@@ -69,20 +68,22 @@ class Prozor:
         self.canvas.bind('<Button-1>', self.canvas_klik)
 
     def start_alg_1(self):
-        if tkinter.messagebox.askquestion('Algoritam 1', 'Pokreni algoritam 1?') == 'yes':
-            print('Pokrecem algoritam 1')
+        if tkinter.messagebox.askquestion('Algoritam grube sile', 'Pokreni algoritam grube sile?') == 'yes':
+            print('Pokrecem algoritam grube sile')
             self.generate_p()
+            self.algoritam = 'b'
 
     def start_alg_2(self):
-        if tkinter.messagebox.askquestion('Algoritam 2', 'Pokreni algoritam 2?') == 'yes':
-            print('Pokrecem algoritam 2')
+        if tkinter.messagebox.askquestion('Pohlepni algoritam', 'Pokreni Pohlepni algoritam?') == 'yes':
+            print('Pokrecem Pohlepni algoritam')
             self.generate_p()
-
+            self.algoritam = 'h'
 
     def start_alg_3(self):
-        if tkinter.messagebox.askquestion('Algoritam 3', 'Pokreni algoritam 3?') == 'yes':
-            print('Pokrecem algoritam 3')
+        if tkinter.messagebox.askquestion('Genetski algoritam', 'Pokreni genetski algoritam?') == 'yes':
+            print('Pokrecem genetski algoritam')
             self.generate_p()
+            self.algoritam = 'g'
 
     def pocetak(self):
         self.canvas_mode = 'pocetak'
@@ -120,9 +121,6 @@ class Prozor:
             self.grane.pop(event)
 
     def canvas_klik(self,event):
-        print(event.x)
-        print(event.y)
-        print('------------------')
         x = event.x
         y = event.y
 
@@ -161,7 +159,6 @@ class Prozor:
                     grane_za_brisanje = []
                     for(gid, cvorovi_grane) in self.grane.items():
                         if id == cvorovi_grane[0] or id == cvorovi_grane[1]:
-                            print(cvorovi_grane)
                             self.canvas.delete(gid)
                             grane_za_brisanje.append(gid)
                     for gid in grane_za_brisanje:
@@ -204,10 +201,27 @@ class Prozor:
         self.root.destroy()
 
     def generate_p(self):
-        self.p = {
-            'nodes': [node for node in self.cvorovi],
 
-            'edges' : [nodes for (id, nodes) in self.grane.items()],
+        cvorovi = []
+
+        for (id, koord) in self.cvorovi.items():
+            cvorovi.append(chr(id+64))
+
+        self.pocetak = chr(self.pocetak + 64)
+        self.kraj = chr(self.kraj + 64)
+
+        for i in range(len(self.prepreke)):
+            self.prepreke[i] = chr(64 + self.prepreke[i])
+
+        grane = []
+
+        for (id, nodes) in self.grane.items():
+            grane.append((chr(nodes[0] + 64), chr(nodes[1] + 64)))
+
+        self.p = {
+            'nodes': cvorovi,
+
+            'edges' : grane,
 
             'obstacles' : self.prepreke,
 
@@ -218,3 +232,6 @@ class Prozor:
 
     def get_p(self):
         return self.p
+
+    def get_algoritam(self):
+        return self.algoritam

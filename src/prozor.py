@@ -3,7 +3,6 @@ import tkinter.messagebox
 
 class Prozor:
     def __init__(self):
-        print('idemo delije')
         self.root = Tk()
         self.root.attributes("-fullscreen", True)
 
@@ -69,22 +68,26 @@ class Prozor:
         self.canvas.bind('<Button-1>', self.canvas_klik)
 
     def start_alg_1(self):
-        if tkinter.messagebox.askquestion('Brute Force', 'Pokreni  Brute Force algoritam?') == 'yes':
-            print('Pokrecem algoritam 1')
+        if tkinter.messagebox.askquestion('Algoritam grube sile', 'Pokreni algoritam grube sile?') == 'yes':
+            print('Pokrecem algoritam grube sile')
             self.generate_p()
             self.algoritam = 'b'
+            self.quit()
 
     def start_alg_2(self):
         if tkinter.messagebox.askquestion('Pohlepni algoritam', 'Pokreni Pohlepni algoritam?') == 'yes':
-            print('Pokrecem algoritam 2')
+            print('Pokrecem Pohlepni algoritam')
             self.generate_p()
             self.algoritam = 'h'
+            self.quit()
+
 
     def start_alg_3(self):
         if tkinter.messagebox.askquestion('Genetski algoritam', 'Pokreni genetski algoritam?') == 'yes':
-            print('Pokrecem algoritam 3')
+            print('Pokrecem genetski algoritam')
             self.generate_p()
             self.algoritam = 'g'
+            self.quit()
 
     def pocetak(self):
         self.canvas_mode = 'pocetak'
@@ -122,9 +125,6 @@ class Prozor:
             self.grane.pop(event)
 
     def canvas_klik(self,event):
-        print(event.x)
-        print(event.y)
-        print('------------------')
         x = event.x
         y = event.y
 
@@ -163,7 +163,6 @@ class Prozor:
                     grane_za_brisanje = []
                     for(gid, cvorovi_grane) in self.grane.items():
                         if id == cvorovi_grane[0] or id == cvorovi_grane[1]:
-                            print(cvorovi_grane)
                             self.canvas.delete(gid)
                             grane_za_brisanje.append(gid)
                     for gid in grane_za_brisanje:
@@ -206,8 +205,11 @@ class Prozor:
         self.root.destroy()
 
     def generate_p(self):
-        for i in range(len(self.nodes)):
-            self.nodes[i] = chr(64 + self.nodes[i])
+
+        cvorovi = []
+
+        for (id, koord) in self.cvorovi.items():
+            cvorovi.append(chr(id+64))
 
         self.pocetak = chr(self.pocetak + 64)
         self.kraj = chr(self.kraj + 64)
@@ -218,11 +220,10 @@ class Prozor:
         grane = []
 
         for (id, nodes) in self.grane.items():
-            grane.append((char(nodes[0] + 64), char(nodes[1] + 64)))
-
+            grane.append((chr(nodes[0] + 64), chr(nodes[1] + 64)))
 
         self.p = {
-            'nodes': [node for node in self.cvorovi],
+            'nodes': cvorovi,
 
             'edges' : grane,
 
