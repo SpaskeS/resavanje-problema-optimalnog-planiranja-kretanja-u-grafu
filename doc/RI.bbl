@@ -1,3 +1,33 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{gen2}
+Ismail AL-Taharwa, Alaa Sheta, and Mohammed Al-Weshah.
+\newblock A mobile robot path planning using genetic algorithm in static
+  environment.
+\newblock 2008.
+
+\bibitem{gen1}
+Sarah Alnasser and Hachemi Bennaceur.
+\newblock An efficient genetic algorithm for the global robot path planning
+  problem.
+\newblock {\em Digital Information and Communication Technology and its
+  Applications (DICTAP) 2016 Sixth International Conference}, 2016.
+
+\bibitem{glavni}
+Christos H.~Papadimitriou, Prabhakar Raghavan, Madhu Sudan, and Hisao Tamaki.
+\newblock Motion planning on a graph.
+\newblock {\em Proc. 35th IEEE Symposium on Foundations of Computer Science
+  (FOCS)}, 09 2001.
+
+\bibitem{def}
+Lydia~E. Kavraki and Steven~M. LaValle.
+\newblock {\em Motion Planning}.
+\newblock 2008.
+
+\bibitem{gen3}
+Chaymaa Lamini, Said Benhlima, and Ali Elbekri.
+\newblock Genetic algorithm based approach for autonomous mobile robot path
+  planning.
+\newblock 2018.
 
 \end{thebibliography}

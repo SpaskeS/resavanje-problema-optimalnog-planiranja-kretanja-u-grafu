@@ -4,11 +4,23 @@ def create_new_generation(population, selected, population_size,
                             reverse = True)[:elite_size]
     
     while len(new_generation)  < population_size:
-        parent1, parent2 = random.sample(selected, 2)
-        child1, child2 = crossover(parent1, parent2, o, r, graph, t, 
-                                   population_size, path)
         
-        new_generation.append(child1)
-        new_generation.append(child2)
+        valid_parents = False
+        while(valid_parents == False):
+            parent1, parent2 = random.sample(selected, 2)
+            
+            if len(parent1[1]) > MIN_PARENT_LEN and
+               len(parent2[1]) > MIN_PARENT_LEN:
+                    
+                child = crossover(parent1, parent2, o, r, graph,
+                                  t, population_size, path)
+                valid_parents = True
+        
+        if random.randrange(0, 100) < MUTATION_RATE:
+            mutated_child = mutation(child, o, r, graph,
+                                     population_size, path, t)
+            new_generation.append(mutated_child)
+        else:
+            new_generation.append(child)
         
     return new_generation

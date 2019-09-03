@@ -1,13 +1,13 @@
 \select@language {serbian}
 \contentsline {section}{\numberline {1}Uvod}{3}{section.1}
-\contentsline {section}{\numberline {2}Opis algoritma}{3}{section.2}
+\contentsline {section}{\numberline {2}Opis algoritma}{4}{section.2}
 \contentsline {subsection}{\numberline {2.1}Reprezentacija jedinke}{4}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Funkcija prilago\IeC {\dj }enosti}{4}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Selekcija}{5}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.2}Funkcija prilago\IeC {\dj }enosti}{5}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Selekcija}{6}{subsection.2.3}
 \contentsline {subsection}{\numberline {2.4}Kreiranje nove generacije}{6}{subsection.2.4}
-\contentsline {subsubsection}{\numberline {2.4.1}Ukr\IeC {\v s}tanje}{6}{subsubsection.2.4.1}
-\contentsline {subsubsection}{\numberline {2.4.2}Mutacija}{7}{subsubsection.2.4.2}
-\contentsline {subsection}{\numberline {2.5}Prikaz algoritma}{7}{subsection.2.5}
-\contentsline {section}{\numberline {3}Eksperimentalni rezultati}{8}{section.3}
-\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{9}{section.4}
-\contentsline {section}{Literatura}{9}{section.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Ukr\IeC {\v s}tanje}{7}{subsubsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.2}Mutacija}{8}{subsubsection.2.4.2}
+\contentsline {subsection}{\numberline {2.5}Prikaz algoritma}{9}{subsection.2.5}
+\contentsline {section}{\numberline {3}Rezultati}{10}{section.3}
+\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{10}{section.4}
+\contentsline {section}{Literatura}{11}{section.4}

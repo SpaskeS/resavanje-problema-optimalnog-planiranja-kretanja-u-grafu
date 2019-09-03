@@ -1,5 +1,8 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: RI.aux
 The style file: plain.bst
-I found no \citation commands---while reading file RI.aux
 Database file #1: seminarski.bib
-(There was 1 error message)
+Warning--empty journal in gen2
+Warning--empty chapter and pages in def
+Warning--empty publisher in def
+Warning--empty journal in gen3
+(There were 4 warnings)

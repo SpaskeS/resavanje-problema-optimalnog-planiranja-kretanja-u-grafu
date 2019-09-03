@@ -15,7 +15,7 @@ def solve_genetic(o, r, graph, t, path):
                                                 path, t))
         
     
-    current_pop = scored_population[:]
+    current_pop = copy.deepcopy(scored_population)
     
     for i in range(MAX_ITERATIONS):
         selected = selection(current_pop, REPRODUCTION_SIZE,
