@@ -20,7 +20,7 @@ def remove_jumps(moves):
 def make_moves_from_path(path):
 
     moves = []
-    p = copy.deepcopy(path)
+    p = path[:]
 
     for i in range(len(p)-1):
         moves.append((p[i+1], p[i], 1, [p[i+1], p[i]]))
@@ -54,7 +54,7 @@ def find_nearest_hole(o,r,graph, start):
     return moves
 
 def move_robot(o,r,graph,node_from,node_to):
-    obstacles = copy.deepcopy(o)
+    obstacles = o[:]
     robot = r
     if not node_from == r:
         raise RuntimeError('node_from is not robot ' + node_from)
@@ -65,7 +65,7 @@ def move_robot(o,r,graph,node_from,node_to):
     return (obstacles,robot)
 
 def move_obstacle(o,r,graph,node_from,node_to):
-    obstacles = copy.deepcopy(o)
+    obstacles = o[:]
     robot  = r
     if node_from not in obstacles:
         raise RuntimeError('node_from is not obstacle ' + node_from)
@@ -93,7 +93,7 @@ def make_move(o,r,graph,node_from,node_to):
     raise RuntimeError('Cant move from ' + node_from)
 
 def make_moves(o,r,graph,moves):
-    obstacles=copy.deepcopy(o)
+    obstacles= o[:]
     robot = r
     for move in moves:
         obstacles,robot = make_move(obstacles,robot,graph,move[0],move[1])
@@ -189,7 +189,7 @@ def solve_heap(o,r,graph,t):
             pm = possible_moves(obstacles,robot,graph)
 
             for move in pm:
-                new_moves = copy.deepcopy(moves)
+                new_moves = moves[:]
                 new_moves.append(move)
                 newobstacles,newrobot = make_moves(obstacles,robot,graph,[move])
                 if t == newrobot:
@@ -221,7 +221,7 @@ def solve_brute_force(o,r,graph,t):
 
             pm = possible_moves(obstacles,robot,graph)
             for move in pm:
-                new_moves = copy.deepcopy(moves)
+                new_moves = moves[:]
                 new_moves.append(move)
                 newobstacles,newrobot = make_moves(obstacles,robot,graph,[move])
                 if t == newrobot:

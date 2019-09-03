@@ -25,7 +25,7 @@ def different_moves(move1, move2):
 def create_random_path(o, r, graph, t, chromosome_len):
 
     moves = []
-    new_o = copy.deepcopy(o)
+    new_o = copy.copy(o)
     new_r = r
     visited = set()
 
@@ -62,7 +62,7 @@ def create_random_path(o, r, graph, t, chromosome_len):
 
             if new_visited not in visited:
 
-                new_moves = copy.deepcopy(moves)
+                new_moves = copy.copy(moves)
                 new_moves.append(random_move)
 
                 visited.add(new_visited)
@@ -86,7 +86,7 @@ def create_random_path(o, r, graph, t, chromosome_len):
 
 def create_initial_population(o, r, graph, t, chromosome_size, population_size):
 
-    obstacles = copy.deepcopy(o)
+    obstacles = copy.copy(o)
     robot = r
 
     initial_population = []
@@ -105,8 +105,11 @@ def fitness_fun(chromosome, o, r, graph, t, path):
             last_robot = chromosome[-i][0]
             break
 
+    if last_robot == t:
+        score += 1000
+
     weight = 0
-    obstacles = copy.deepcopy(o)
+    obstacles = copy.copy(o)
 
 
     for i in range(len(chromosome)):
@@ -126,10 +129,6 @@ def fitness_fun(chromosome, o, r, graph, t, path):
             score += 10*((len(path)-distance+1))
 
     count_obs = 0
-#
-#    for c in chromosome:
-#        if c[2] > 1:
-#            score += c[2]*10
 
     for obstacle in obstacles:
         if obstacle in path:
@@ -138,17 +137,18 @@ def fitness_fun(chromosome, o, r, graph, t, path):
             score = score - 40*count_obs - 5*(len(path)-obs_distance+1)
 
     if ssolver.is_hole(obstacles, r, t) and count_obs == 0:
+        for i in range(0, len(path)-1):
+            for move in chromosome:
+                if move == (path[i], path[i+1]) and move[0] == r:
+                    score+=1000
         distance = nx.shortest_path_length(graph, r, t)
         score += 1000*(len(path)-distance+1)
-
-
-    #    score += 5000
 
     return score
 
 def fit_chromosome(chromosome_moves, o, r, graph, population_size, path, t):
 
-    obstacles = copy.deepcopy(o)
+    obstacles = copy.copy(o)
     robot = r
 
     chromosome_o, chromosome_r = ssolver.make_moves(obstacles, robot, graph, chromosome_moves)
@@ -160,7 +160,7 @@ def fit_chromosome(chromosome_moves, o, r, graph, population_size, path, t):
 
 
 def tournament_selection(population, tournament_size):
-    pop = copy.deepcopy(population)
+    pop = copy.copy(population)
 
     winner = None
     tournament = []
@@ -175,7 +175,7 @@ def tournament_selection(population, tournament_size):
 
 def selection(population, reproduction_size, tournament_size):
 
-    pop = copy.deepcopy(population)
+    pop = copy.copy(population)
     selected = []
 
     while len(selected) < reproduction_size:
@@ -185,8 +185,9 @@ def selection(population, reproduction_size, tournament_size):
 
 def create_new_generation(elite, selected, population_size, elite_size, o, r, graph, t, path):
 
-    new_generation = copy.deepcopy(elite)
+    new_generation = copy.copy(elite)
 
+    random_elite = random.choice(new_generation)
     while len(new_generation) < population_size:
 
         valid_parents = False
@@ -198,10 +199,11 @@ def create_new_generation(elite, selected, population_size, elite_size, o, r, gr
                 valid_parents = True
 
 
-        if random.randrange(0, 100) < 10:
-
+        if random.randrange(0, 100) < 20:
+            mutated_elite = mutation(random_elite, o, r, graph, population_size, path, t)
             mutated_child = mutation(child1, o, r, graph, population_size, path, t)
             new_generation.append(mutated_child)
+            new_generation.append(mutated_elite)
         else:
             new_generation.append(child1)
 
@@ -212,22 +214,24 @@ def mutation(chromosome, o, r, graph, population_size, path, t):
 
     moves = chromosome[1]
 
-    obstacles = copy.deepcopy(o)
+    obstacles = copy.copy(o)
     robot = r
     new_o, new_r = ssolver.make_moves(obstacles, robot, graph, moves)
+    if new_r == t:
+        return chromosome
 
     pm = ssolver.possible_moves(new_o, new_r, graph)
 
     for p in pm:
-        #different_moves(p, moves[-1]) and
-        if p[0] == new_r:
-
+        if p[0] == new_r and different_moves(p, moves[-1]):
+            moves.append(p)
+            break
+        elif different_moves(p, moves[-1]):
             moves.append(p)
             break
 
-    new_o, new_r = ssolver.make_moves(copy.deepcopy(o), r, graph, moves)
-
-    mutated = fit_chromosome(moves, copy.deepcopy(o), r, graph, population_size, path, t)
+    new_o, new_r = ssolver.make_moves(copy.copy(o), r, graph, moves)
+    mutated = fit_chromosome(moves, copy.copy(o), r, graph, population_size, path, t)
 
     return mutated
 
@@ -236,7 +240,7 @@ def crossover(parent1, parent2, o, r, graph, t, population_size, path):
     (score1, moves1) = parent1
     (score2, moves2) = parent2
 
-    obstacles = copy.deepcopy(o)
+    obstacles = copy.copy(o)
     robot = r
 
     if len(moves1) <= len(moves2):
@@ -283,8 +287,8 @@ def solve_genetic(o, r, graph, t, path):
     chromosome_size = len(path) * obstacles_in_path
 
     population_size = 100
-    elite_size = 50
-    max_iterations = 100
+    elite_size = 60
+    max_iterations = 200
     reproduction_size = 30
     tournament_size = 10
 
@@ -297,32 +301,28 @@ def solve_genetic(o, r, graph, t, path):
         chromosome = initial_population[i]
         scored_population.append(fit_chromosome(chromosome, o, r, graph, population_size, path, t))
 
-    current_pop = copy.deepcopy(scored_population)
+    current_pop = copy.copy(scored_population)
 
     for i in range(max_iterations):
 
-        #elite = sorted(copy.deepcopy(current_pop), key= lambda item:item[0], reverse=True)[:int(elite_size)]
         elite = []
-        for_selection = copy.deepcopy(current_pop)
+        for_selection = copy.copy(current_pop)
         for j in range(elite_size):
             largest = max(for_selection, key=lambda item:item[0])
             elite.append(largest)
             for_selection.remove(largest)
 
-#        for_selection = copy.deepcopy(current_pop)
-#        for s in for_selection:
-#            if s in elite:
-#                for_selection.remove(s)
 
         selected = selection(for_selection, reproduction_size, tournament_size)
-
         current_pop = create_new_generation(elite, selected, population_size, elite_size,
                                             o, r, graph, t, path)
 
 
         best = max(current_pop, key=lambda item:item[0])
-        print(str(i) + ' : ' + str(best))
 
+        print(str(i) + ' : ' + str(best))
+        if best[0] > 9999:
+            break
 
     print('BEST ' + str(best))
 

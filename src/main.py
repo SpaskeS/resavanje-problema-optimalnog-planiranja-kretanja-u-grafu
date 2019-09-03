@@ -24,7 +24,6 @@ algorithm = 'g'
 problem = ProblemGenerator().getByName('p7')
 
 path = nx.shortest_path(problem.graph, problem.robot, problem.target)
-
 s = time.time()
 
 if algorithm == 'b':
