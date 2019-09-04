@@ -6,8 +6,8 @@
 \contentsline {subsection}{\numberline {2.3}Selekcija}{6}{subsection.2.3}
 \contentsline {subsection}{\numberline {2.4}Kreiranje nove generacije}{6}{subsection.2.4}
 \contentsline {subsubsection}{\numberline {2.4.1}Ukr\IeC {\v s}tanje}{7}{subsubsection.2.4.1}
-\contentsline {subsubsection}{\numberline {2.4.2}Mutacija}{8}{subsubsection.2.4.2}
+\contentsline {subsubsection}{\numberline {2.4.2}Mutacija}{9}{subsubsection.2.4.2}
 \contentsline {subsection}{\numberline {2.5}Prikaz algoritma}{9}{subsection.2.5}
-\contentsline {section}{\numberline {3}Rezultati}{10}{section.3}
-\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{10}{section.4}
-\contentsline {section}{Literatura}{11}{section.4}
+\contentsline {section}{\numberline {3}Rezultati}{11}{section.3}
+\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{15}{section.4}
+\contentsline {section}{Literatura}{16}{section.4}

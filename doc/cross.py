@@ -3,7 +3,6 @@ def crossover(parent1, parent2, o, r, graph,
 
     (score1, moves1) = parent1
     (score2, moves2) = parent2
-
     obstacles = copy.deepcopy(o)
     robot = r
 
@@ -13,7 +12,6 @@ def crossover(parent1, parent2, o, r, graph,
     else:
         i = random.randrange(1, len(moves2)-1)
         new_moves = moves2[:i]
-
     new_o, new_r = ssolver.make_moves(obstacles, robot, 
                                       graph, new_moves)
 

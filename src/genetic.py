@@ -7,11 +7,11 @@ import copy
 import operator
 import math
 
-POPULATION_SIZE = 1000
-ELITE_SIZE = 1
-MAX_ITER = 20
-REPRODUCTION_SIZE = 400
-TOURNAMENT_SIZE = 20
+POPULATION_SIZE = 200
+ELITE_SIZE = 100
+MAX_ITER = 200
+REPRODUCTION_SIZE = 50
+TOURNAMENT_SIZE = 10
 
 def different_moves(move1, move2):
 
@@ -330,7 +330,5 @@ def solve_genetic(o, r, graph, t, path):
 
         print(str(i) + ' : ' + str(best))
 
-    print('BEST ' + str(best))
-    print('Generacija ' + str(best_iter))
 
     return best[1]

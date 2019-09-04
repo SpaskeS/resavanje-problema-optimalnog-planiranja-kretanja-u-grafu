@@ -9,7 +9,7 @@ import time
 import problem as prbl
 from prozor import Prozor
 
-# prozor = Prozor()
+#prozor = Prozor()
 # prozor.root.mainloop()
 # p = prozor.get_p()
 # problem = prbl.Problem(nodes=p["nodes"],
