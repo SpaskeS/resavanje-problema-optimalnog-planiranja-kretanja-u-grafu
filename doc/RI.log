@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2019.3.16)  4 SEP 2019 05:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2019.3.16)  4 SEP 2019 19:07
 entering extended mode
 **./RI.tex
 (RI.tex
@@ -991,25 +991,25 @@ lek-cija pod-ra-zu-meva da je-dinke ucestvuju
 
 (selection.py) [6] (newgen.py) [7] (cross.py) [8] (mutation.py) [9] (solver.py)
 [10]
-<g1.png, id=349, 782.17218pt x 417.05812pt>
+<g1.png, id=349, 779.16093pt x 400.49625pt>
 File: g1.png Graphic file (type png)
 <use g1.png>
 Package pdftex.def Info: g1.png  used on input line 160.
-(pdftex.def)             Requested size: 312.86333pt x 166.82028pt.
+(pdftex.def)             Requested size: 350.61917pt x 180.22165pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <12> on input line 174.
  [11 <./g1.png>]
-<g2.png, id=360, 786.68906pt x 419.31656pt>
+<g2.png, id=358, 786.68906pt x 419.31656pt>
 File: g2.png Graphic file (type png)
 <use g2.png>
 Package pdftex.def Info: g2.png  used on input line 227.
-(pdftex.def)             Requested size: 314.67004pt x 167.72365pt.
+(pdftex.def)             Requested size: 354.0068pt x 188.6907pt.
  [12 <./g2.png>]
-<g3.png, id=368, 771.63281pt x 419.31656pt>
+<g3.png, id=367, 774.64406pt x 396.7322pt>
 File: g3.png Graphic file (type png)
 <use g3.png>
 Package pdftex.def Info: g3.png  used on input line 292.
-(pdftex.def)             Requested size: 308.64764pt x 167.72365pt.
+(pdftex.def)             Requested size: 325.34828pt x 166.62637pt.
  [13 <./g3.png>] [14] [15] (RI.bbl)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 391.
 
@@ -1028,7 +1028,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 391.
  ) 
 Here is how much of TeX's memory you used:
  12467 strings out of 493308
- 170389 string characters out of 3138771
+ 170277 string characters out of 3138771
  641892 words of memory out of 3000000
  15609 multiletter control sequences out of 15000+200000
  18302 words of font info for 42 fonts, out of 3000000 for 9000
@@ -1050,9 +1050,9 @@ ts/type1/public/cm-super/sfrm1200.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/
 public/cm-super/sfrm1440.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/cm
 -super/sfrm2074.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/cm-super/sf
 ti1095.pfb>
-Output written on RI.pdf (16 pages, 428582 bytes).
+Output written on RI.pdf (16 pages, 422915 bytes).
 PDF statistics:
- 503 PDF objects out of 1000 (max. 8388607)
+ 501 PDF objects out of 1000 (max. 8388607)
  260 named destinations out of 1000 (max. 500000)
  117 words of extra memory for PDF output out of 10000 (max. 10000000)
 
