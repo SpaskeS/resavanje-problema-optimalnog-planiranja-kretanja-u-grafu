@@ -323,7 +323,8 @@ def solve_genetic(o, r, graph, t, path):
 
 
         best = max(current_pop, key=lambda item:item[0])
-
+        if best[0] > 15000:
+            return best[1]
         if current_best < best[0]:
             current_best = best[0]
             best_iter = i

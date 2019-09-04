@@ -38,8 +38,8 @@ class Problem:
             return True
 
     def color(self,node):
-        if (node in self.obstacles and node == self.target):
-            return 'c'
+    #    if (node in self.obstacles and node == self.target):
+    #        return 'c'
         if node in self.obstacles:
             return 'r'
         if node == self.robot:
