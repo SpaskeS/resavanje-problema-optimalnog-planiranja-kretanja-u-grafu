@@ -2,7 +2,6 @@ import heapq as heap
 import networkx as nx
 import copy
 import random
-
 def remove_jumps(moves):
 
     res = []

@@ -9,5 +9,5 @@
 \contentsline {subsubsection}{\numberline {2.4.2}Mutacija}{9}{subsubsection.2.4.2}
 \contentsline {subsection}{\numberline {2.5}Prikaz algoritma}{9}{subsection.2.5}
 \contentsline {section}{\numberline {3}Rezultati}{11}{section.3}
-\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{15}{section.4}
-\contentsline {section}{Literatura}{16}{section.4}
+\contentsline {section}{\numberline {4}Zaklju\IeC {\v c}ak}{17}{section.4}
+\contentsline {section}{Literatura}{18}{section.4}

@@ -351,9 +351,10 @@
 \end{tabular}
 \end{center}
 \end{table}
-	
-
-Na kraju ćemo uporediti vreme izvršavanja našeg algoritma u odnosu na algoritam grube sile, za sva tri primera. Kao što je rečeno, najbolje moguće rešenje obično bude pronađeno već u ranim iteracijama, tako da nije potrebno iterirati do poslednje kao što smo u prethodnim testovima. Dakle, pri poređenju algoritma sa algoritmom grube sile, algoritam se završava čim se pronađe dovoljno dobro rešenje.
+		
+		
+\vspace*{2\baselineskip}
+Uporedićemo vreme izvršavanja našeg algoritma u odnosu na algoritam grube sile, za sva tri primera. Kao što je rečeno, najbolje moguće rešenje obično bude pronađeno već u ranim iteracijama, tako da nije potrebno iterirati do poslednje kao što smo u prethodnim testovima. Dakle, pri poređenju algoritma sa algoritmom grube sile, algoritam se završava čim se pronađe dovoljno dobro rešenje.
 	\par Kao što se vidi u Tabeli 10, što graf ima više čvorova, to će algoritam grube sile duže raditi, te u ovom i njemu sličnim primerima, genetski algoritam predstavlja dobru optimizaciju - ne pronalazi najbolje rešenje, ali pronalazi dovoljno dobro rešenje, u značajno kraćem vremenskom intervalu. U druga dva primera, koji imaju manji broj čvorova, genetski algoritam ne pruža značajno poboljšanje u odnosu na algoritam grube sile, što je i očekivano. 
 
 	\begin {table}[H]
@@ -374,13 +375,63 @@ Na kraju ćemo uporediti vreme izvršavanja našeg algoritma u odnosu na algorit
 \end{table}
 
 
+\vspace*{3\baselineskip}
+Primer G3 se pokazao kao najteži za rešavanje. U nastavku su dati grafički prikazi učestalosti dobrih i loših rešenja primera G3 u 100 puštanja programa. Parametri za ovih 100 rešenja su birani kao optimalni za ovaj primer i dati su u Tabeli 11. Kao i ranije, program se prekida u trenutku kada se naiđe na neko dovoljno dobro rešenje. Na slici \ref{fig:slika5} prikazan je histogram učestalosti generacija u kojima je pronađeno to rešenje. Može se videti da se preko 40 puta desilo da je rešenje pronađeno između 20. i 30. generacije, i preko 10 puta u prvih 20 generacija. Manje od 10 puta rešenje je pronađeno u poslednjih 10 generacija. Histogram sa slike  \ref{fig:slika6} pokazuje vremena izvršavanja svakog od izvršavanja. Može se zaključiti da je prosek pronalaska dovoljno dobrog rešenja za G3 između 4 i 6 sekundi. Na samom kraju, slika \ref{fig:slika7} prikazuje učestalosti brojeva poteza u rešenjima za svako od izvršavanja, tj. optimalnost dobijenih rešenja. U više od 50\% slučajeva, broj poteza je između 20 i 30, što se može smatrati dobrim rešenjem, s obzirom na to da je optimalno rešenje za G3 18 poteza. Na histogramu se vidi da je to rešenje čak i pronađeno u jednom od 100 izvršavanja. Algoritam je samo 3 puta vratio loše rešenje od preko 100 poteza.
+
+	\begin {table}[H]
+\begin{center}
+	\caption {Parametri za 100 puštanja programa} \label{tab:title} 
+	\begin{tabular}{|| c|c ||} 	
+		\hline\hline
+		Veličina populacije &  200   \\ 
+		\hline
+		Broj elitnih jedinki & 50   \\
+		\hline
+		Maksimalan broj iteracija & 200   \\
+		\hline
+		Broj jedinki za reprodukciju  & 30   \\
+		\hline
+		Veličina turnira & 10   \\
+		\hline
+		Verovatnoća mutacije & 20\%  \\ 
+		\hline
+	\end{tabular}
+\end{center}
+\end{table}
 
 
+	\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{generacije1.png}
+	\end{center}
+	\caption{{\small Histogram učestalosti generacija za 100 puštanja programa za G3}}
+	\label{fig:slika5}
+\end{figure}
+
+\vspace*{3\baselineskip}
+
+	\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{vreme1.png}
+	\end{center}
+	\caption{{\small Histogram učestalosti vremena izvršavanja za 100 puštanja programa za G3}}
+	\label{fig:slika6}
+\end{figure}
+
+	\begin{figure}[H]
+	\begin{center}
+		\includegraphics[scale=0.4]{brojpoteza1.png}
+	\end{center}
+	\caption{{\small Histogram učestalosti broja poteza za 100 puštanja programa za G3}}
+	\label{fig:slika7}
+\end{figure}
+
+\vspace*{2\baselineskip}
 
 	\section{Zaključak}
 	\label{sec:zakljucak}
 	
-	U ovom radu prikazan je genetski algoritam za rešavanje problema planiranja pokreta u povezanom, neusmerenom grafu. Kao što je prikazano u radu, algoritam se pokazao kao relativno uspešan u rešavanju ovog problema, i u slučaju primera sa puno čvorova, pruža značajno poboljšanje u odnosu na algoritam grube sile. S obzirom na kompleksnost problema i činjenicu da nije postojala prethodna literatura na koju smo mogli da se oslonimo pri rešavanju problema, ovaj algoritam predstavlja preliminarno rešenje, koje se sigurno može unaprediti, ali se u ovom slučaju pokazao dovoljno dobrim rešenjem.
+	U ovom radu prikazan je genetski algoritam za rešavanje problema planiranja pokreta u povezanom, neusmerenom grafu. Kao što je prikazano u radu, algoritam se pokazao kao relativno uspešan u rešavanju ovog problema, i u slučaju primera sa puno čvorova, pruža značajno poboljšanje u odnosu na algoritam grube sile. Sa histograma se može zaključiti da u većini slučajeva, algoritam donosi prilično dobre rezultate. S obzirom na kompleksnost problema i činjenicu da nije postojala prethodna literatura na koju smo mogli da se oslonimo pri rešavanju problema, ovaj algoritam predstavlja preliminarno rešenje, koje se sigurno može unaprediti, ali se u ovom slučaju pokazao dovoljno dobrim rešenjem.
 	
 	\newpage
 	
